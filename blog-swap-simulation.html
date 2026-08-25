@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>【メキシコペソ/トルコリラ】スワップ複利シミュレーターの使い方と雪だるま式運用の現実的なコツ | あかとのトレードギルド</title>
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #111827;
+      --accent-blue: #00f0ff;
+      --accent-green: #00ff66;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #1f2937;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      line-height: 1.8;
+    }
+
+    header {
+      border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+      background: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent-blue);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover { color: var(--accent-blue); }
+
+    article {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 32px;
+    }
+
+    .article-meta {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--accent-blue);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      margin-right: 6px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      color: #fff;
+      margin-top: 0;
+      line-height: 1.4;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+      color: var(--accent-blue);
+      border-left: 4px solid var(--accent-blue);
+      padding-left: 12px;
+      margin-top: 40px;
+      margin-bottom: 16px;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      color: #fff;
+      margin-top: 24px;
+    }
+
+    p { margin-bottom: 20px; color: #d1d5db; }
+
+    ul, ol {
+      margin-bottom: 24px;
+      padding-left: 24px;
+      color: #d1d5db;
+    }
+
+    li { margin-bottom: 8px; }
+
+    .callout {
+      background: rgba(0, 240, 255, 0.05);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+
+    .callout-title {
+      font-weight: bold;
+      color: var(--accent-blue);
+      margin-bottom: 8px;
+    }
+
+    .btn-cta {
+      display: inline-block;
+      background: var(--accent-blue);
+      color: #000;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-weight: bold;
+      text-decoration: none;
+      margin: 16px 0;
+      transition: opacity 0.2s;
+    }
+
+    .btn-cta:hover { opacity: 0.9; }
+
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <a href="./" class="logo">あかとの<span>トレードギルド</span></a>
+    </div>
+  </header>
+
+  <div class="container">
+    <a href="./" class="back-link">← ギルド本部（ポータル）へ戻る</a>
+
+    <article>
+      <div class="article-meta">
+        2026.08.25 | <span class="tag">スワップ運用</span> <span class="tag">自作ツール</span> <span class="tag">初心者向け</span>
+      </div>
+      
+      <h1>【メキシコペソ/トルコリラ】スワップ複利シミュレーターの使い方と雪だるま式運用の現実的なコツ</h1>
+
+      <p>FXの高金利通貨（メキシコペソ/円、トルコリラ/円、南アフリカランド/円など）を使ったスワップポイント運用。「貯まったスワップポイントでさらにポジションを買い増す（複利運用）」ことで、将来の不労所得を爆発的に増やせるのが最大の魅力です。</p>
+
+      <p>しかし、「毎月いくら積み立てれば、何年後に月いくらのスワップ収入になるのか？」を正確に計算するのは意外と面倒なもの。</p>
+
+      <p>そこで今回、ギルドで<b>「スワップ複利シミュレーター」</b>を自作・公開しました！この記事ではツールの使い方と、実際に高金利通貨で破綻せずに資産を増やすための戦略を解説します。</p>
+
+      <div class="callout" style="text-align: center;">
+        <div class="callout-title">⚡ 自作ツール公開中</div>
+        <p style="margin-bottom: 12px; font-size: 0.9rem;">直感的なスライダー操作で、1年〜10年後の資産推移グラフをリアルタイム描画！</p>
+        <a href="./swap-simulator/" class="btn-cta">👉 スワップ複利シミュレーターを使ってみる</a>
+      </div>
+
+      <h2>1. スワップ複利シミュレーターでわかること</h2>
+      <p>当シミュレーターでは、以下の条件を入力・変更することで、将来の運用資産の増え方を可視化できます。</p>
+
+      <ul>
+        <li><b>初期投資額 & 毎月の積立額</b>（無理のない運用資金を設定）</li>
+        <li><b>保有通貨ペア & レバレッジ</b>（安全圏のレバレッジ1〜3倍推奨）</li>
+        <li><b>想定スワップポイント（10,000通貨あたり）</b></li>
+        <li><b>再投資（複利）の実行タイミング</b></li>
+      </ul>
+
+      <p>単利運用（スワップをただ放置・出金するだけ）と複利運用（スワップでポジションを追加購入する）のグラフが重なって表示されるため、<b>「複利の雪だるま効果」が何年目から爆発するのか</b>が一目でわかります。</p>
+
+      <h2>2. 高金利通貨スワップ運用で「破綻しない」3つのコツ</h2>
+      <p>高金利通貨は魅力的ですが、過去に多くのトレーダーが「急落時の強制ロスカット」で退場してきた歴史があります。複利運用を成功させるための現実的なルールは以下の3点です。</p>
+
+      <h3>① 実効レバレッジは2倍〜3倍までに抑える</h3>
+      <p>スワップ運用は「長期でポジションを持ち続けること」が大前提です。レバレッジを5倍、10倍に上げると、スワップの増えるスピードは速くなりますが、一時的な暴落（ショック相場）で一発アウトになります。実効レバレッジは最大でも<b>3倍未満</b>に抑えるのが鉄則です。</p>
+
+      <h3>② 買い増し（再投資）は一定のルールを決めて行う</h3>
+      <p>スワップが貯まるたびに適当にポジションを増やすのではなく、「スワップ累計が〇〇円貯まったら1ロット追加」といったルールを厳守します。シミュレーターを使えば、無理のない再投資ラインを事前にシミュレーションできます。</p>
+
+      <h3>③ FX会社の「スワップポイント付与ルール」を選ぶ</h3>
+      <p>複利運用を行う上で非常に重要なのが、FX会社の「未決済スワップの扱い」です。未決済のままスワップポイントが口座反映され、それを証拠金として再投資に回せる会社（または税金面で優位な会社）を選ぶことで、運用効率が大幅にアップします。</p>
+
+      <h2>3. ツールへのリクエスト・改善要望について</h2>
+      <p>このシミュレーターは、ギルドメンバーの声を反映して日々アップデートを行っています。</p>
+      <p>「この通貨ペアの初期値を入れてほしい」「ロスカットラインの目安計算機能も追加してほしい」などのご要望がありましたら、ぜひポータルサイト下部の<b>【ギルド開発依頼掲示板】</b>から教えてください！</p>
+
+      <div class="callout" style="text-align: center; margin-top: 40px;">
+        <p style="margin-bottom: 12px; font-weight: bold;">さっそくあなたの運用プランを計算してみよう！</p>
+        <a href="./swap-simulator/" class="btn-cta">⚡ スワップ複利シミュレーターを起動する</a>
+      </div>
+    </article>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 あかとのトレードギルド (Akato Trade Guild). All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
