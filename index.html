@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>あかとのトレードギルド | FXツール開発ドック＆トレード日記</title>
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #111827;
+      --accent-blue: #00f0ff;
+      --accent-green: #00ff66;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #1f2937;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    /* ヘッダー・近未来風ナビ */
+    header {
+      border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+      background: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .logo span {
+      color: var(--accent-blue);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: var(--accent-blue);
+    }
+
+    /* メインコンテナ */
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    /* ヒーローセクション */
+    .hero {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.05) 0%, rgba(0, 255, 102, 0.05) 100%);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      margin-bottom: 40px;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.05);
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      margin-top: 0;
+      color: #fff;
+    }
+
+    .hero p {
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 24px auto;
+    }
+
+    .status-badge {
+      display: inline-block;
+      background: rgba(0, 255, 102, 0.1);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    /* グリッドレイアウト */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* セクションタイトル */
+    .section-title {
+      font-size: 1.2rem;
+      color: var(--accent-blue);
+      border-left: 4px solid var(--accent-blue);
+      padding-left: 12px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ブログ記事カード */
+    .blog-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .blog-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-blue);
+    }
+
+    .blog-date {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .blog-card h3 {
+      margin: 8px 0;
+      font-size: 1.3rem;
+    }
+
+    .blog-card h3 a {
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .blog-card h3 a:hover { color: var(--accent-blue); }
+
+    .blog-excerpt {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    .tag {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      color: var(--accent-blue);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    /* サイドバー（ツール一覧＆依頼掲示板） */
+    .sidebar-widget {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .tool-link {
+      display: block;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      border-radius: 8px;
+      color: #fff;
+      text-decoration: none;
+      margin-bottom: 10px;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .tool-link:hover {
+      background: rgba(0, 240, 255, 0.1);
+      border-color: var(--accent-blue);
+      color: var(--accent-blue);
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header>
+    <div class="header-container">
+      <a href="#" class="logo">あかとの<span>トレードギルド</span></a>
+      <nav>
+        <a href="#tools">開発ツール</a>
+        <a href="#blog">開発記</a>
+        <a href="#request">依頼掲示板</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- ヒーローエリア -->
+    <div class="hero">
+      <span class="status-badge">SYSTEM: ONLINE</span>
+      <h1>トレードの「あったらいいな」を即可視化する</h1>
+      <p>ギルドマスター「あかと」が、FXトレーダーに必要な複利計算機・MQL4コードパーツ・検証ツールを開発・公開する秘密基地です。</p>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="main-grid">
+      
+      <!-- 左側：開発日記・更新ブログ -->
+      <main id="blog">
+        <div class="section-title">Dev Log / 開発日記</div>
+
+        <!-- 記事 1 -->
+        <article class="blog-card">
+          <div class="blog-date">2026.08.25 | <span class="tag">お知らせ</span> <span class="tag">スワップ</span></div>
+          <h3><a href="#">「スワップ複利シミュレーター」をアップデートしました！</a></h3>
+          <p class="blog-excerpt">高金利通貨（ペソ/円、リラ/円など）の複利効果をリアルタイムでエリアチャート描画するシミュレーターを大幅改修。スライダーで簡単に将来の資産推移をテストできます。</p>
+          <a href="./swap-simulator/" class="tool-link" style="display:inline-block; margin:0;">👉 ツールを使ってみる</a>
+        </article>
+
+        <!-- 記事 2 -->
+        <article class="blog-card">
+          <div class="blog-date">2026.08.24 | <span class="tag">EA開発</span> <span class="tag">MQL4</span></div>
+          <h3><a href="#">【MQL4】逆引きコード辞典サイトの構想とプロトタイプ公開</a></h3>
+          <p class="blog-excerpt">「移動平均線のゴールデンクロス」「MACDゼロライン抜け」など、EAを作りたい時にコピペ＆パラメータ変更だけで使えるMQL4コードスニペット集を開発中です。</p>
+        </article>
+
+      </main>
+
+      <!-- 右側：ツール一覧 ＆ リクエスト -->
+      <aside>
+        
+        <!-- 開発済みツール箱 -->
+        <div class="sidebar-widget" id="tools">
+          <div class="section-title">Guild Tools</div>
+          <a href="./swap-simulator/" class="tool-link">⚡ スワップ複利シミュレーター</a>
+          <a href="#" class="tool-link" style="opacity: 0.5;">🛠️ MQLコードパーツ辞典 (準備中)</a>
+          <a href="#" class="tool-link" style="opacity: 0.5;">📊 Fintokeiリスク計算機 (企画中)</a>
+        </div>
+
+        <!-- 依頼掲示板（読者コミュニケーション） -->
+        <div class="sidebar-widget" id="request">
+          <div class="section-title">リクエスト掲示板</div>
+          <p style="font-size:0.85rem; color: var(--text-muted);">「こんな計算機がほしい」「このインジケーターのMQLコードが分からない」など、ギルドメンバーからの開発リクエストを募集しています！</p>
+          <a href="https://x.com/" target="_blank" class="tool-link" style="text-align:center; background: var(--accent-blue); color: #000;">X (Twitter) であかとにリクエスト</a>
+        </div>
+
+      </aside>
+
+    </div>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 あかとのトレードギルド (Akato Trade Guild). All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
