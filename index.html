@@ -24,7 +24,7 @@
       line-height: 1.6;
     }
 
-    /* ヘッダー・近未来風ナビ */
+    /* ヘッダー */
     header {
       border-bottom: 1px solid rgba(0, 240, 255, 0.2);
       background: rgba(17, 24, 39, 0.8);
@@ -68,14 +68,13 @@
       color: var(--accent-blue);
     }
 
-    /* メインコンテナ */
     .container {
       max-width: 1000px;
       margin: 40px auto;
       padding: 0 20px;
     }
 
-    /* ヒーローセクション */
+    /* ヒーローエリア */
     .hero {
       background: linear-gradient(135deg, rgba(0, 240, 255, 0.05) 0%, rgba(0, 255, 102, 0.05) 100%);
       border: 1px solid rgba(0, 240, 255, 0.3);
@@ -86,17 +85,8 @@
       box-shadow: 0 0 30px rgba(0, 240, 255, 0.05);
     }
 
-    .hero h1 {
-      font-size: 2rem;
-      margin-top: 0;
-      color: #fff;
-    }
-
-    .hero p {
-      color: var(--text-muted);
-      max-width: 600px;
-      margin: 0 auto 24px auto;
-    }
+    .hero h1 { font-size: 2rem; margin-top: 0; color: #fff; }
+    .hero p { color: var(--text-muted); max-width: 600px; margin: 0 auto 24px auto; }
 
     .status-badge {
       display: inline-block;
@@ -120,7 +110,6 @@
       .main-grid { grid-template-columns: 1fr; }
     }
 
-    /* セクションタイトル */
     .section-title {
       font-size: 1.2rem;
       color: var(--accent-blue);
@@ -146,28 +135,11 @@
       border-color: var(--accent-blue);
     }
 
-    .blog-date {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .blog-card h3 {
-      margin: 8px 0;
-      font-size: 1.3rem;
-    }
-
-    .blog-card h3 a {
-      color: #fff;
-      text-decoration: none;
-    }
-
+    .blog-date { font-size: 0.8rem; color: var(--text-muted); }
+    .blog-card h3 { margin: 8px 0; font-size: 1.3rem; }
+    .blog-card h3 a { color: #fff; text-decoration: none; }
     .blog-card h3 a:hover { color: var(--accent-blue); }
-
-    .blog-excerpt {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 16px;
-    }
+    .blog-excerpt { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 16px; }
 
     .tag {
       background: rgba(255, 255, 255, 0.05);
@@ -178,7 +150,7 @@
       font-size: 0.75rem;
     }
 
-    /* サイドバー（ツール一覧＆依頼掲示板） */
+    /* サイドバー */
     .sidebar-widget {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -204,6 +176,16 @@
       background: rgba(0, 240, 255, 0.1);
       border-color: var(--accent-blue);
       color: var(--accent-blue);
+    }
+
+    /* 掲示板スタイル */
+    .bbs-container {
+      grid-column: 1 / -1;
+      margin-top: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
     }
 
     footer {
@@ -245,42 +227,63 @@
       <main id="blog">
         <div class="section-title">Dev Log / 開発日記</div>
 
-        <!-- 記事 1 -->
         <article class="blog-card">
           <div class="blog-date">2026.08.25 | <span class="tag">お知らせ</span> <span class="tag">スワップ</span></div>
-          <h3><a href="#">「スワップ複利シミュレーター」をアップデートしました！</a></h3>
-          <p class="blog-excerpt">高金利通貨（ペソ/円、リラ/円など）の複利効果をリアルタイムでエリアチャート描画するシミュレーターを大幅改修。スライダーで簡単に将来の資産推移をテストできます。</p>
+          <h3><a href="./swap-simulator/">「スワップ複利シミュレーター」を公開しました！</a></h3>
+          <p class="blog-excerpt">高金利通貨（ペソ/円、リラ/円など）の複利効果をリアルタイムで描画するシミュレーター。スライダー操作で将来の資産推移をテストできます。</p>
           <a href="./swap-simulator/" class="tool-link" style="display:inline-block; margin:0;">👉 ツールを使ってみる</a>
         </article>
 
-        <!-- 記事 2 -->
         <article class="blog-card">
           <div class="blog-date">2026.08.24 | <span class="tag">EA開発</span> <span class="tag">MQL4</span></div>
-          <h3><a href="#">【MQL4】逆引きコード辞典サイトの構想とプロトタイプ公開</a></h3>
-          <p class="blog-excerpt">「移動平均線のゴールデンクロス」「MACDゼロライン抜け」など、EAを作りたい時にコピペ＆パラメータ変更だけで使えるMQL4コードスニペット集を開発中です。</p>
+          <h3><a href="#">【MQL4】逆引きコード辞典サイトのプロトタイプ作成</a></h3>
+          <p class="blog-excerpt">「移動平均線のゴールデンクロス」「MACDゼロライン抜け」など、コピペ＆パラメータ変更で即使えるMQL4コードスニペット集を開発中です。</p>
         </article>
-
       </main>
 
-      <!-- 右側：ツール一覧 ＆ リクエスト -->
+      <!-- 右側：ツール一覧 -->
       <aside>
-        
-        <!-- 開発済みツール箱 -->
         <div class="sidebar-widget" id="tools">
           <div class="section-title">Guild Tools</div>
           <a href="./swap-simulator/" class="tool-link">⚡ スワップ複利シミュレーター</a>
           <a href="#" class="tool-link" style="opacity: 0.5;">🛠️ MQLコードパーツ辞典 (準備中)</a>
           <a href="#" class="tool-link" style="opacity: 0.5;">📊 Fintokeiリスク計算機 (企画中)</a>
         </div>
+      </aside>
 
-        <!-- 依頼掲示板（読者コミュニケーション） -->
-        <div class="sidebar-widget" id="request">
-          <div class="section-title">リクエスト掲示板</div>
-          <p style="font-size:0.85rem; color: var(--text-muted);">「こんな計算機がほしい」「このインジケーターのMQLコードが分からない」など、ギルドメンバーからの開発リクエストを募集しています！</p>
-          <a href="https://x.com/" target="_blank" class="tool-link" style="text-align:center; background: var(--accent-blue); color: #000;">X (Twitter) であかとにリクエスト</a>
+      <!-- ⚔️ ギルド開発依頼掲示板（ちゃんねる風） -->
+      <div class="bbs-container" id="request">
+        <div class="section-title">⚔️ ギルド開発依頼掲示板</div>
+        <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+          ツール制作のリクエスト、バグ報告、FXの雑談などお気軽にどうぞ！（完全匿名・ログイン不要）
+        </p>
+
+        <!-- 投稿フォーム -->
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+          <div style="display: flex; gap: 12px; margin-bottom: 10px; flex-wrap: wrap;">
+            <input type="text" id="bbsName" placeholder="名前 (空欄で「名無しギルド員」)" style="background: #0f172a; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; flex: 1; min-width: 200px;">
+          </div>
+          <textarea id="bbsComment" placeholder="例：「RSIとボリンジャーバンドを組み合わせたMQL4コードが欲しいです！」「メキシコペソ以外のスワップ計算機も作れますか？」" rows="3" style="width: 100%; background: #0f172a; border: 1px solid var(--border-color); color: #fff; padding: 8px 12px; border-radius: 6px; box-sizing: border-box; resize: vertical; margin-bottom: 10px;"></textarea>
+          <button onclick="submitComment()" style="background: var(--accent-blue); color: #000; border: none; padding: 8px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">依頼を送信する</button>
+          <span id="sendStatus" style="font-size: 0.85rem; margin-left: 10px; color: var(--accent-green);"></span>
         </div>
 
-      </aside>
+        <!-- レス・コメント一覧 -->
+        <div id="bbsLogs" style="display: flex; flex-direction: column; gap: 12px;">
+          <!-- デフォルトレス（あかと） -->
+          <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-left: 3px solid var(--accent-blue); padding: 12px 16px; border-radius: 6px;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">
+              <span style="color: var(--accent-blue); font-weight: bold;">1</span> ：
+              <span style="color: #fff; font-weight: bold;">あかと ★（ギルドマスター）</span> ：
+              <span>2026/08/25(火) 15:30:00</span>
+              <span style="margin-left: 10px; color: #64748b;">ID:MasterKey00</span>
+            </div>
+            <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.5;">
+              開発依頼掲示板をオープンしました！「こんな計算機がほしい」「このインジケーターのMQLコードが分からない」など、気軽に書き込んでください！
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -288,6 +291,76 @@
   <footer>
     <p>&copy; 2026 あかとのトレードギルド (Akato Trade Guild). All rights reserved.</p>
   </footer>
+
+<script>
+  // Googleフォーム送信設定
+  const FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeUPtxWJYatXCxMHI4F-LhWKxQidgfCeMbN0TvAKAzboO1LfQ/formResponse";
+  const ENTRY_NAME = "entry.836455431";
+  const ENTRY_COMMENT = "entry.75927420";
+
+  function submitComment() {
+    const nameInput = document.getElementById('bbsName').value.trim() || '名無しギルド員';
+    const commentInput = document.getElementById('bbsComment').value.trim();
+    const status = document.getElementById('sendStatus');
+
+    if (!commentInput) {
+      alert('コメントを入力してください。');
+      return;
+    }
+
+    status.innerText = "送信中...";
+
+    const formData = new FormData();
+    formData.append(ENTRY_NAME, nameInput);
+    formData.append(ENTRY_COMMENT, commentInput);
+
+    fetch(FORM_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    }).then(() => {
+      status.innerText = "送信完了しました！";
+      document.getElementById('bbsComment').value = '';
+      
+      // 画面上に即時追加
+      addNewResToScreen(nameInput, commentInput);
+
+      setTimeout(() => { status.innerText = ''; }, 3000);
+    }).catch(err => {
+      status.innerText = "送信に失敗しました。";
+      console.error(err);
+    });
+  }
+
+  function addNewResToScreen(name, comment) {
+    const logs = document.getElementById('bbsLogs');
+    const resCount = logs.children.length + 1;
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+    const randomId = 'ID:' + Math.random().toString(36).substring(2, 9);
+
+    const resHTML = `
+      <div style="background: var(--card-bg); border: 1px solid var(--border-color); border-left: 3px solid var(--accent-green); padding: 12px 16px; border-radius: 6px;">
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">
+          <span style="color: var(--accent-green); font-weight: bold;">${resCount}</span> ：
+          <span style="color: #fff; font-weight: bold;">${escapeHTML(name)}</span> ：
+          <span>${dateStr}</span>
+          <span style="margin-left: 10px; color: #64748b;">${randomId}</span>
+        </div>
+        <div style="font-size: 0.9rem; color: #e2e8f0; line-height: 1.5;">
+          ${escapeHTML(comment).replace(/\n/g, '<br>')}
+        </div>
+      </div>
+    `;
+    logs.insertAdjacentHTML('beforeend', resHTML);
+  }
+
+  function escapeHTML(str) {
+    return str.replace(/[&<>'"]/g, 
+      tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+    );
+  }
+</script>
 
 </body>
 </html>
