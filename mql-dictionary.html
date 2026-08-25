@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MQL4 コードパーツ辞典 | あかとのトレードギルド</title>
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #111827;
+      --accent-blue: #00f0ff;
+      --accent-green: #00ff66;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #1f2937;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    header {
+      border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+      background: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--accent-blue);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .page-title {
+      font-size: 1.8rem;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+
+    .page-desc {
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+
+    /* 検索バー */
+    .search-box {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--accent-blue);
+      color: #fff;
+      padding: 14px 20px;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      margin-bottom: 30px;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+    }
+
+    /* コードカード */
+    .code-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 24px;
+      transition: border-color 0.2s;
+    }
+
+    .code-card:hover {
+      border-color: var(--accent-blue);
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .code-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--accent-blue);
+    }
+
+    .copy-btn {
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--accent-blue);
+      color: #000;
+    }
+
+    pre {
+      background: #080c14;
+      border: 1px solid #1e293b;
+      padding: 16px;
+      border-radius: 6px;
+      overflow-x: auto;
+      color: #a5f3fc;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .back-link:hover { color: var(--accent-blue); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <a href="./" class="logo">あかとの<span>トレードギルド</span></a>
+    </div>
+  </header>
+
+  <div class="container">
+    <a href="./" class="back-link">← ギルド本部（ポータル）へ戻る</a>
+    
+    <h1 class="page-title">🛠️ MQL4 コードパーツ辞典</h1>
+    <p class="page-desc">EA開発でよく使う条件式や関数スニペット集。ワンクリックでコピペして使えます。</p>
+
+    <!-- 検索窓 -->
+    <input type="text" id="searchInput" class="search-box" placeholder="キーワードで検索（例: MA, クロス, 時間, 決済...）" onkeyup="filterCodes()">
+
+    <div id="codeList">
+
+      <!-- パーツ 1 -->
+      <div class="code-card" data-keywords="MA 移動平均線 ゴールデンクロス クロス">
+        <div class="code-header">
+          <div class="code-title">移動平均線（MA）のゴールデンクロス判定</div>
+          <button class="copy-btn" onclick="copyCode(this)">コピペする</button>
+        </div>
+        <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom:10px;">短期MAが長期MAを下に上抜けた瞬間にtrueを返します。</p>
+        <pre><code>// 1本前と2本前のMA値を取得
+double maShort1 = iMA(Symbol(), Period(), 10, 0, MODE_SMA, PRICE_CLOSE, 1);
+double maShort2 = iMA(Symbol(), Period(), 10, 0, MODE_SMA, PRICE_CLOSE, 2);
+double maLong1  = iMA(Symbol(), Period(), 50, 0, MODE_SMA, PRICE_CLOSE, 1);
+double maLong2  = iMA(Symbol(), Period(), 50, 0, MODE_SMA, PRICE_CLOSE, 2);
+
+// ゴールデンクロス条件
+bool isGoldenCross = (maShort2 &lt;= maLong2) &amp;&amp; (maShort1 &gt; maLong1);</code></pre>
+      </div>
+
+      <!-- パーツ 2 -->
+      <div class="code-card" data-keywords="新足 ローソク足確定 確定足 1本に1回">
+        <div class="code-header">
+          <div class="code-title">ローソク足確定時（新しい足の開始時）のみ処理を実行</div>
+          <button class="copy-btn" onclick="copyCode(this)">コピペする</button>
+        </div>
+        <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom:10px;">毎ティック処理されるOnTick内で、足の確定時だけエントリー判定したい時に必須です。</p>
+        <pre><code>static datetime lastBarTime = 0;
+datetime currentBarTime = iTime(Symbol(), Period(), 0);
+
+if(currentBarTime != lastBarTime) {
+   lastBarTime = currentBarTime;
+   // --- ここに新しい足ができた時の処理を書く ---
+}</code></pre>
+      </div>
+
+      <!-- パーツ 3 -->
+      <div class="code-card" data-keywords="全決済 ポジションクローズ CloseAll">
+        <div class="code-header">
+          <div class="code-title">保有中の全ポジションを一括決済する関数</div>
+          <button class="copy-btn" onclick="copyCode(this)">コピペする</button>
+        </div>
+        <pre><code>void CloseAllPositions() {
+   for(int i = OrdersTotal() - 1; i &gt;= 0; i--) {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) {
+         if(OrderSymbol() == Symbol()) {
+            if(OrderType() == OP_BUY) {
+               bool res = OrderClose(OrderTicket(), OrderLots(), Bid, 3, clrRed);
+            } else if(OrderType() == OP_SELL) {
+               bool res = OrderClose(OrderTicket(), OrderLots(), Ask, 3, clrBlue);
+            }
+         }
+      }
+   }
+}</code></pre>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const codeBlock = btn.parentElement.nextElementSibling.nextElementSibling.querySelector('code');
+      navigator.clipboard.writeText(codeBlock.innerText).then(() => {
+        const originalText = btn.innerText;
+        btn.innerText = 'コピー完了！';
+        btn.style.background = 'var(--accent-green)';
+        btn.style.color = '#000';
+        setTimeout(() => {
+          btn.innerText = originalText;
+          btn.style.background = 'rgba(0, 240, 255, 0.1)';
+          btn.style.color = 'var(--accent-blue)';
+        }, 2000);
+      });
+    }
+
+    function filterCodes() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.code-card');
+
+      cards.forEach(card => {
+        const keywords = card.getAttribute('data-keywords').toLowerCase();
+        const text = card.innerText.toLowerCase();
+        if (keywords.includes(input) || text.includes(input)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
