@@ -34,7 +34,7 @@
     }
 
     .header-container {
-      max-width: 1000px;
+      max-width: 900px;
       margin: 0 auto;
       padding: 16px 20px;
       display: flex;
@@ -66,7 +66,7 @@
     nav a:hover { color: var(--accent-blue); }
 
     .container {
-      max-width: 1000px;
+      max-width: 900px;
       margin: 40px auto;
       padding: 0 20px;
     }
@@ -89,39 +89,23 @@
       margin-bottom: 24px;
     }
 
-    .template-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-
-    .btn-template {
-      background: rgba(0, 240, 255, 0.1);
-      border: 1px solid var(--accent-blue);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: 8px;
+    .panel-header {
       font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
+      font-size: 1.05rem;
+      color: #fff;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .btn-template:hover {
-      background: var(--accent-blue);
-      color: #000;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-
+    /* フォーム要素 */
     .form-group {
       display: flex;
       flex-direction: column;
+      margin-bottom: 16px;
     }
 
     .form-group label {
@@ -134,18 +118,20 @@
       background: #0f172a;
       border: 1px solid var(--border-color);
       color: #fff;
-      padding: 10px;
+      padding: 10px 12px;
       border-radius: 6px;
       font-size: 0.95rem;
+      width: 100%;
+      box-sizing: border-box;
     }
 
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 15px;
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
     }
 
+    /* 生成ボタン */
     .btn-generate {
       width: 100%;
       background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
@@ -156,15 +142,16 @@
       font-size: 1.1rem;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 20px;
+      margin-top: 10px;
       transition: opacity 0.2s;
     }
 
     .btn-generate:hover { opacity: 0.9; }
 
+    /* 出力エリア */
     textarea {
       width: 100%;
-      height: 350px;
+      height: 380px;
       background: #080c14;
       border: 1px solid var(--border-color);
       color: var(--accent-green);
@@ -196,6 +183,10 @@
       border-top: 1px solid var(--border-color);
       margin-top: 60px;
     }
+
+    @media (max-width: 600px) {
+      .form-row { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -214,39 +205,69 @@
   <div class="container">
     <div class="section-title">⚡ ノーコードMQL4 EAジェネレーター</div>
     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px;">
-      パラメータを選択するだけで、安定稼働に対応したMQL4ソースコードを自動生成します。
+      パラメータを設定して「MQL4コードを生成する」を押すだけで、EAのソースコードが完成します。
     </p>
 
-    <!-- 1. テンプレート呼び出し -->
+    <!-- 1. 基本設定 -->
     <div class="panel">
-      <div style="font-weight: bold; margin-bottom: 12px; color: var(--accent-blue);">🚀 一撃テンプレート呼び出し</div>
-      <div class="template-group">
-        <button class="btn-template" onclick="loadRsi2Template()">【推奨】RSI2 極端逆張りロジック</button>
-        <button class="btn-template" onclick="loadRsi14Template()">RSI14 スタンダード逆張り</button>
-      </div>
-    </div>
-
-    <!-- 2. パラメータ設定エリア -->
-    <div class="panel">
-      <div style="font-weight: bold; margin-bottom: 16px; color: #fff;">⚙️ ロジック＆資金管理パラメーター</div>
+      <div class="panel-header">⚙️ 1. 基本パラメーター設定</div>
       
-      <div class="form-grid">
+      <div class="form-row">
         <div class="form-group">
           <label>取引ロット数 (Lots)</label>
           <input type="number" id="inpLots" value="0.1" step="0.01">
         </div>
         <div class="form-group">
-          <label>RSI 期間 (Period)</label>
-          <input type="number" id="inpRsiPeriod" value="2">
+          <label>マジックナンバー (識別番号)</label>
+          <input type="number" id="inpMagic" value="20260828">
         </div>
+      </div>
+    </div>
+
+    <!-- 2. 判定タイミング（ローソク足確定判定） -->
+    <div class="panel">
+      <div class="panel-header">⏱️ 2. 判定タイミング設定（実行頻度）</div>
+      
+      <div class="form-group">
+        <label>エントリー判定を行うタイミング</label>
+        <select id="inpTimeframe">
+          <option value="PERIOD_CURRENT">ティックごと（毎価格更新時）</option>
+          <option value="PERIOD_M1">1分足 確定時</option>
+          <option value="PERIOD_M5">5分足 確定時</option>
+          <option value="PERIOD_M15" selected>15分足 確定時（推奨）</option>
+          <option value="PERIOD_M30">30分足 確定時</option>
+          <option value="PERIOD_H1">1時間足 確定時</option>
+          <option value="PERIOD_D1">日足 確定時</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 3. エントリー条件（条件1） -->
+    <div class="panel">
+      <div class="panel-header">🎯 3. エントリー条件1 (RSIオシレーター)</div>
+      
+      <div class="form-group">
+        <label>RSI 期間 (Period)</label>
+        <input type="number" id="inpRsiPeriod" value="2">
+      </div>
+
+      <div class="form-row">
         <div class="form-group">
-          <label>売り判定閾値 (Upper / 逆張り売り)</label>
-          <input type="number" id="inpRsiUpper" value="90">
-        </div>
-        <div class="form-group">
-          <label>買い判定閾値 (Lower / 逆張り買い)</label>
+          <label>買いエントリー条件 (RSIがこの値以下で買)</label>
           <input type="number" id="inpRsiLower" value="10">
         </div>
+        <div class="form-group">
+          <label>売りエントリー条件 (RSIがこの値以上で売)</label>
+          <input type="number" id="inpRsiUpper" value="90">
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. 決済設定 -->
+    <div class="panel">
+      <div class="panel-header">🛡️ 4. 決済パラメーター設定</div>
+      
+      <div class="form-row">
         <div class="form-group">
           <label>利確 (Take Profit / pips)</label>
           <input type="number" id="inpTp" value="30">
@@ -255,31 +276,12 @@
           <label>損切 (Stop Loss / pips)</label>
           <input type="number" id="inpSl" value="20">
         </div>
-        <div class="form-group">
-          <label>判定タイミング (判定足)</label>
-          <select id="inpTimeframe">
-            <option value="PERIOD_M15" selected>15分足確定時 (推奨)</option>
-            <option value="PERIOD_M5">5分足確定時</option>
-            <option value="PERIOD_H1">1時間足確定時</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>マジックナンバー</label>
-          <input type="number" id="inpMagic" value="20260828">
-        </div>
-      </div>
-
-      <div class="checkbox-group">
-        <input type="checkbox" id="chkBarCheck" checked>
-        <label for="chkBarCheck" style="font-size: 0.85rem; color: var(--accent-green);">
-          ローソク足確定時判定を有効化（ノイズや高頻度取引を抑止）
-        </label>
       </div>
 
       <button class="btn-generate" onclick="generateMQL4()">🔥 MQL4コードを生成する</button>
     </div>
 
-    <!-- 3. コード出力エリア -->
+    <!-- 5. コード出力エリア -->
     <div class="panel">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <div style="font-weight: bold; color: var(--accent-green);">📝 完成したMQL4ソースコード</div>
@@ -296,43 +298,27 @@
   </footer>
 
   <script>
-    function loadRsi2Template() {
-      document.getElementById('inpLots').value = 0.1;
-      document.getElementById('inpRsiPeriod').value = 2;
-      document.getElementById('inpRsiUpper').value = 90;
-      document.getElementById('inpRsiLower').value = 10;
-      document.getElementById('inpTp').value = 30;
-      document.getElementById('inpSl').value = 20;
-      document.getElementById('inpTimeframe').value = "PERIOD_M15";
-      document.getElementById('chkBarCheck').checked = true;
-      generateMQL4();
-    }
-
-    function loadRsi14Template() {
-      document.getElementById('inpLots').value = 0.1;
-      document.getElementById('inpRsiPeriod').value = 14;
-      document.getElementById('inpRsiUpper').value = 70;
-      document.getElementById('inpRsiLower').value = 30;
-      document.getElementById('inpTp').value = 40;
-      document.getElementById('inpSl').value = 30;
-      document.getElementById('inpTimeframe').value = "PERIOD_M15";
-      document.getElementById('chkBarCheck').checked = true;
-      generateMQL4();
-    }
-
     function generateMQL4() {
       const lots = document.getElementById('inpLots').value;
+      const magic = document.getElementById('inpMagic').value;
+      const timeframe = document.getElementById('inpTimeframe').value;
       const period = document.getElementById('inpRsiPeriod').value;
       const upper = document.getElementById('inpRsiUpper').value;
       const lower = document.getElementById('inpRsiLower').value;
       const tp = document.getElementById('inpTp').value;
       const sl = document.getElementById('inpSl').value;
-      const timeframe = document.getElementById('inpTimeframe').value;
-      const magic = document.getElementById('inpMagic').value;
-      const useBarCheck = document.getElementById('chkBarCheck').checked;
 
-      let barCheckCode = useBarCheck ? 
-        `   // ローソク足確定判定（確定タイミングで1回のみ動作）\n   if(iTime(Symbol(), ${timeframe}, 0) == lastBarTime) return;\n   lastBarTime = iTime(Symbol(), ${timeframe}, 0);\n` : '';
+      // 判定タイミング（ティック or 確定足）の処理分け
+      let timingCheckCode = "";
+      let shiftVal = 1;
+
+      if (timeframe === "PERIOD_CURRENT") {
+        timingCheckCode = "   // 毎ティック判定\n";
+        shiftVal = 0; // リアルタイム判定
+      } else {
+        timingCheckCode = `   // ローソク足確定判定 (${timeframe})\n   if(iTime(Symbol(), ${timeframe}, 0) == lastBarTime) return;\n   lastBarTime = iTime(Symbol(), ${timeframe}, 0);\n`;
+        shiftVal = 1; // 確定足参照
+      }
 
       const code = `//+------------------------------------------------------------------+
 //|                                  Akato_Generated_EA.mq4          |
@@ -344,14 +330,18 @@
 #property version   "1.00"
 #property strict
 
-// --- パラメーター設定 ---
+// --- 基本パラメーター設定 ---
 input double   InpLots          = ${lots};       // ロット数
-input int      InpRSI_Period    = ${period};        // RSI期間
-input double   InpRSI_Upper     = ${upper}.0;     // 売り閾値 (逆張り)
-input double   InpRSI_Lower     = ${lower}.0;     // 買い閾値 (逆張り)
-input int      InpTakeProfitPips= ${tp};       // テイクプロフィット (pips)
-input int      InpStopLossPips  = ${sl};       // ストップロス (pips)
 input int      InpMagicNumber   = ${magic}; // マジックナンバー
+
+// --- 条件1 (RSI) ---
+input int      InpRSI_Period    = ${period};        // RSI期間
+input double   InpRSI_Upper     = ${upper}.0;     // 売り判定閾値
+input double   InpRSI_Lower     = ${lower}.0;     // 買い判定閾値
+
+// --- 決済設定 ---
+input int      InpTakeProfitPips= ${tp};       // 利確 (pips)
+input int      InpStopLossPips  = ${sl};       // 損切 (pips)
 
 datetime lastBarTime;
 
@@ -362,29 +352,29 @@ int OnInit()
 
 void OnTick()
 {
-${barCheckCode}
-   // 既存ポジションがある場合は重複エントリーを回避
+${timingCheckCode}
+   // 既存ポジションがある場合はスキップ
    if(OrdersTotal() > 0) return;
 
-   // RSI値取得 (確定足 shift=1)
-   double rsi = iRSI(Symbol(), ${timeframe}, InpRSI_Period, PRICE_CLOSE, 1);
+   // RSI値の取得
+   double rsi = iRSI(Symbol(), ${timeframe === "PERIOD_CURRENT" ? "0" : timeframe}, InpRSI_Period, PRICE_CLOSE, ${shiftVal});
 
    // --- エントリー条件判定 ---
-   // RSIが ${lower} 以下 ➔ 買エントリー
+   // 買い判定
    if(rsi <= InpRSI_Lower)
    {
       double ask = MarketInfo(Symbol(), MODE_ASK);
-      double slPrice = ask - (InpStopLossPips * Point * 10);
-      double tpPrice = ask + (InpTakeProfitPips * Point * 10);
-      OrderSend(Symbol(), OP_BUY, InpLots, ask, 3, slPrice, tpPrice, "Guild_RSI_Buy", InpMagicNumber, 0, Blue);
+      double slPrice = (InpStopLossPips > 0) ? ask - (InpStopLossPips * Point * 10) : 0;
+      double tpPrice = (InpTakeProfitPips > 0) ? ask + (InpTakeProfitPips * Point * 10) : 0;
+      OrderSend(Symbol(), OP_BUY, InpLots, ask, 3, slPrice, tpPrice, "Guild_EA_Buy", InpMagicNumber, 0, Blue);
    }
-   // RSIが ${upper} 以上 ➔ 売エントリー
+   // 売り判定
    else if(rsi >= InpRSI_Upper)
    {
       double bid = MarketInfo(Symbol(), MODE_SELL);
-      double slPrice = bid + (InpStopLossPips * Point * 10);
-      double tpPrice = bid - (InpTakeProfitPips * Point * 10);
-      OrderSend(Symbol(), OP_SELL, InpLots, bid, 3, slPrice, tpPrice, "Guild_RSI_Sell", InpMagicNumber, 0, Red);
+      double slPrice = (InpStopLossPips > 0) ? bid + (InpStopLossPips * Point * 10) : 0;
+      double tpPrice = (InpTakeProfitPips > 0) ? bid - (InpTakeProfitPips * Point * 10) : 0;
+      OrderSend(Symbol(), OP_SELL, InpLots, bid, 3, slPrice, tpPrice, "Guild_EA_Sell", InpMagicNumber, 0, Red);
    }
 }`;
 
@@ -403,8 +393,9 @@ ${barCheckCode}
       });
     }
 
+    // 初期ロード時に1回生成
     window.onload = function() {
-      loadRsi2Template();
+      generateMQL4();
     };
   </script>
 </body>
