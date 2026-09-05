@@ -102,6 +102,38 @@
       gap: 8px;
     }
 
+    /* チェックボックス選択グリッド */
+    .indicator-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .checkbox-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-color);
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.2s;
+    }
+
+    .checkbox-card:hover {
+      border-color: var(--accent-blue);
+      background: rgba(0, 240, 255, 0.05);
+    }
+
+    .checkbox-card input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
     /* フォーム要素 */
     .form-group {
       display: flex;
@@ -235,7 +267,6 @@
     <!-- 1. 基本設定 -->
     <div class="panel">
       <div class="panel-header">⚙️ 1. 基本パラメーター設定</div>
-      
       <div class="form-row">
         <div class="form-group">
           <label>取引ロット数 (Lots)</label>
@@ -246,13 +277,7 @@
           <input type="number" id="inpMagic" value="20260828">
         </div>
       </div>
-    </div>
-
-    <!-- 2. 判定タイミング（ローソク足確定判定） -->
-    <div class="panel">
-      <div class="panel-header">⏱️ 2. 判定タイミング設定（実行頻度）</div>
-      
-      <div class="form-group">
+      <div class="form-group" style="margin-bottom:0;">
         <label>エントリー判定を行うタイミング</label>
         <select id="inpTimeframe">
           <option value="PERIOD_CURRENT">ティックごと（毎価格更新時）</option>
@@ -266,21 +291,46 @@
       </div>
     </div>
 
-    <!-- 3. エントリー条件（条件1: RSI） -->
+    <!-- 2. 使用インジケーター選択 -->
     <div class="panel">
-      <div class="panel-header">🎯 3. エントリー条件1 (RSIオシレーター)</div>
+      <div class="panel-header">🧩 2. 使用するエントリー条件（複数選択可）</div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top:-8px; margin-bottom: 12px;">
+        チェックを入れた条件がすべて揃った時（AND条件）にエントリーします。
+      </p>
       
+      <div class="indicator-selector">
+        <label class="checkbox-card">
+          <input type="checkbox" id="chkRsi" checked onchange="togglePanels()">
+          <span>📊 RSI</span>
+        </label>
+        <label class="checkbox-card">
+          <input type="checkbox" id="chkSma" checked onchange="togglePanels()">
+          <span>📈 SMA (移動平均線)</span>
+        </label>
+        <label class="checkbox-card" style="opacity: 0.5; cursor: not-allowed;" title="今後実装予定">
+          <input type="checkbox" disabled>
+          <span>📉 EMA (準備中)</span>
+        </label>
+        <label class="checkbox-card" style="opacity: 0.5; cursor: not-allowed;" title="今後実装予定">
+          <input type="checkbox" disabled>
+          <span>🌊 MACD (準備中)</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 動的パネル: RSI -->
+    <div class="panel" id="panelRsi">
+      <div class="panel-header">📊 条件: RSIオシレーター</div>
       <div class="form-group">
         <label>RSI 期間 (Period)</label>
         <input type="number" id="inpRsiPeriod" value="2">
       </div>
 
-      <!-- 条件A -->
       <div class="condition-box">
-        <div class="condition-title" style="color: var(--accent-blue);">🔵 トリガーA（メイン条件1）</div>
+        <div class="condition-title" style="color: var(--accent-blue);">🔵 トリガーA（条件1）</div>
         <div class="flex-inputs">
           <div class="form-group" style="margin-bottom:0;">
-            <label>RSI数値</label>
+            <label>RSI閾値</label>
             <input type="number" id="inpRsiValA" value="10">
           </div>
           <div class="form-group" style="margin-bottom:0;">
@@ -300,12 +350,11 @@
         </div>
       </div>
 
-      <!-- 条件B -->
       <div class="condition-box">
-        <div class="condition-title" style="color: var(--accent-red);">🔴 トリガーB（メイン条件2）</div>
+        <div class="condition-title" style="color: var(--accent-red);">🔴 トリガーB（条件2）</div>
         <div class="flex-inputs">
           <div class="form-group" style="margin-bottom:0;">
-            <label>RSI数値</label>
+            <label>RSI閾値</label>
             <input type="number" id="inpRsiValB" value="90">
           </div>
           <div class="form-group" style="margin-bottom:0;">
@@ -326,56 +375,40 @@
       </div>
     </div>
 
-    <!-- 4. AND条件（条件2: 移動平均線 SMA） -->
-    <div class="panel">
-      <div class="panel-header">🔗 4. 追加フィルター条件 (AND条件: 移動平均線 SMA)</div>
-      
+    <!-- 動的パネル: SMA -->
+    <div class="panel" id="panelSma">
+      <div class="panel-header">📈 条件: SMA (単純移動平均線)</div>
       <div class="form-group">
-        <label>SMAフィルターの利用</label>
-        <select id="useSma" onchange="toggleSmaInputs()">
-          <option value="false">使用しない（RSI条件のみでエントリー）</option>
-          <option value="true" selected>使用する（AND条件を追加）</option>
-        </select>
+        <label>SMA 期間 (Period)</label>
+        <input type="number" id="inpSmaPeriod" value="200">
       </div>
 
-      <div id="smaSettingsBlock">
-        <div class="form-group">
-          <label>SMA 期間 (Period)</label>
-          <input type="number" id="inpSmaPeriod" value="200">
+      <div class="condition-box">
+        <div class="condition-title" style="color: var(--accent-blue);">🔵 トリガーA発動時のSMA判定</div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>判定ルール</label>
+          <select id="inpSmaOpA">
+            <option value=">=" selected>終値が SMA以上 (上昇トレンド時のみ)</option>
+            <option value="<=">終値が SMA以下 (下落トレンド時のみ)</option>
+          </select>
         </div>
+      </div>
 
-        <div class="condition-box">
-          <div class="condition-title" style="color: var(--accent-blue);">🔵 トリガーA発動時のSMA条件</div>
-          <div class="form-row">
-            <div class="form-group" style="margin-bottom:0;">
-              <label>判定ルール</label>
-              <select id="inpSmaOpA">
-                <option value=">=" selected>終値が SMA以上（上昇トレンド時のみ）</option>
-                <option value="<=">終値が SMA以下（下落トレンド時のみ）</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="condition-box">
-          <div class="condition-title" style="color: var(--accent-red);">🔴 トリガーB発動時のSMA条件</div>
-          <div class="form-row">
-            <div class="form-group" style="margin-bottom:0;">
-              <label>判定ルール</label>
-              <select id="inpSmaOpB">
-                <option value="<=" selected>終値が SMA以下（下落トレンド時のみ）</option>
-                <option value=">=">終値が SMA以上（上昇トレンド時のみ）</option>
-              </select>
-            </div>
-          </div>
+      <div class="condition-box">
+        <div class="condition-title" style="color: var(--accent-red);">🔴 トリガーB発動時のSMA判定</div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label>判定ルール</label>
+          <select id="inpSmaOpB">
+            <option value="<=" selected>終値が SMA以下 (下落トレンド時のみ)</option>
+            <option value=">=">終値が SMA以上 (上昇トレンド時のみ)</option>
+          </select>
         </div>
       </div>
     </div>
 
-    <!-- 5. 決済設定 -->
+    <!-- 3. 決済設定 -->
     <div class="panel">
-      <div class="panel-header">🛡️ 5. 決済パラメーター設定</div>
-      
+      <div class="panel-header">🛡️ 3. 決済パラメーター設定</div>
       <div class="form-row">
         <div class="form-group">
           <label>利確 (Take Profit / pips)</label>
@@ -390,7 +423,7 @@
       <button class="btn-generate" onclick="generateMQL4()">🔥 MQL4コードを生成する</button>
     </div>
 
-    <!-- 6. コード出力エリア -->
+    <!-- 4. コード出力エリア -->
     <div class="panel">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <div style="font-weight: bold; color: var(--accent-green);">📝 完成したMQL4ソースコード</div>
@@ -407,34 +440,26 @@
   </footer>
 
   <script>
-    function toggleSmaInputs() {
-      const useSma = document.getElementById('useSma').value === 'true';
-      document.getElementById('smaSettingsBlock').style.display = useSma ? 'block' : 'none';
+    // パネルの表示/非表示切り替え
+    function togglePanels() {
+      const isRsi = document.getElementById('chkRsi').checked;
+      const isSma = document.getElementById('chkSma').checked;
+
+      document.getElementById('panelRsi').style.display = isRsi ? 'block' : 'none';
+      document.getElementById('panelSma').style.display = isSma ? 'block' : 'none';
     }
 
     function generateMQL4() {
       const lots = document.getElementById('inpLots').value;
       const magic = document.getElementById('inpMagic').value;
       const timeframe = document.getElementById('inpTimeframe').value;
-      const periodRsi = document.getElementById('inpRsiPeriod').value;
       
-      const valA = document.getElementById('inpRsiValA').value;
-      const opA = document.getElementById('inpRsiOpA').value;
-      const typeA = document.getElementById('inpOrderTypeA').value;
-
-      const valB = document.getElementById('inpRsiValB').value;
-      const opB = document.getElementById('inpRsiOpB').value;
-      const typeB = document.getElementById('inpOrderTypeB').value;
-
-      const isSmaUsed = document.getElementById('useSma').value === 'true';
-      const periodSma = document.getElementById('inpSmaPeriod').value;
-      const smaOpA = document.getElementById('inpSmaOpA').value;
-      const smaOpB = document.getElementById('inpSmaOpB').value;
+      const isRsi = document.getElementById('chkRsi').checked;
+      const isSma = document.getElementById('chkSma').checked;
 
       const tp = document.getElementById('inpTp').value;
       const sl = document.getElementById('inpSl').value;
 
-      // 判定タイミング（ティック or 確定足）の処理分け
       let timingCheckCode = "";
       let shiftVal = 1;
 
@@ -446,7 +471,44 @@
         shiftVal = 1;
       }
 
-      // エントリーロジック記述の生成
+      const tfArg = timeframe === "PERIOD_CURRENT" ? "0" : timeframe;
+
+      // 各条件配列
+      let condsA = [];
+      let condsB = [];
+      let inputDecls = [];
+      let indicatorGetCodes = [];
+
+      // RSIの処理
+      if (isRsi) {
+        const periodRsi = document.getElementById('inpRsiPeriod').value;
+        const valA = document.getElementById('inpRsiValA').value;
+        const opA = document.getElementById('inpRsiOpA').value;
+        const valB = document.getElementById('inpRsiValB').value;
+        const opB = document.getElementById('inpRsiOpB').value;
+
+        inputDecls.push(`// --- 条件: RSI ---\ninput int      InpRSI_Period    = ${periodRsi};        // RSI期間\ninput double   InpRSI_ValA      = ${valA}.0;     // トリガーA 閾値\ninput double   InpRSI_ValB      = ${valB}.0;     // トリガーB 閾値`);
+        indicatorGetCodes.push(`   double rsi = iRSI(Symbol(), ${tfArg}, InpRSI_Period, PRICE_CLOSE, ${shiftVal});`);
+        condsA.push(`rsi ${opA} InpRSI_ValA`);
+        condsB.push(`rsi ${opB} InpRSI_ValB`);
+      }
+
+      // SMAの処理
+      if (isSma) {
+        const periodSma = document.getElementById('inpSmaPeriod').value;
+        const smaOpA = document.getElementById('inpSmaOpA').value;
+        const smaOpB = document.getElementById('inpSmaOpB').value;
+
+        inputDecls.push(`// --- 条件: SMA ---\ninput int      InpSMA_Period    = ${periodSma};      // SMA期間`);
+        indicatorGetCodes.push(`   double sma = iMA(Symbol(), ${tfArg}, InpSMA_Period, 0, MODE_SMA, PRICE_CLOSE, ${shiftVal});\n   double closePrice = iClose(Symbol(), ${tfArg}, ${shiftVal});`);
+        condsA.push(`closePrice ${smaOpA} sma`);
+        condsB.push(`closePrice ${smaOpB} sma`);
+      }
+
+      // 注文タイプ取得
+      const typeA = isRsi ? document.getElementById('inpOrderTypeA').value : "BUY";
+      const typeB = isRsi ? document.getElementById('inpOrderTypeB').value : "SELL";
+
       function buildOrderBlock(type, label) {
         if (type === "BUY") {
           return `      double ask = MarketInfo(Symbol(), MODE_ASK);\n` +
@@ -464,25 +526,9 @@
       const codeA = buildOrderBlock(typeA, "TrigA");
       const codeB = buildOrderBlock(typeB, "TrigB");
 
-      const tfArg = timeframe === "PERIOD_CURRENT" ? "0" : timeframe;
-
-      // 条件文の構築
-      let condA = `rsi ${opA} InpRSI_ValA`;
-      let condB = `rsi ${opB} InpRSI_ValB`;
-
-      if (isSmaUsed) {
-        condA += ` && closePrice ${smaOpA} sma`;
-        condB += ` && closePrice ${smaOpB} sma`;
-      }
-
-      let smaInputDecl = "";
-      let smaGetCode = "";
-
-      if (isSmaUsed) {
-        smaInputDecl = `\n// --- 条件2 (SMA) ---\ninput int      InpSMA_Period    = ${periodSma};      // SMA期間\n`;
-        smaGetCode = `   double sma = iMA(Symbol(), ${tfArg}, InpSMA_Period, 0, MODE_SMA, PRICE_CLOSE, ${shiftVal});\n` +
-                     `   double closePrice = iClose(Symbol(), ${tfArg}, ${shiftVal});\n`;
-      }
+      // 最終条件文の合成
+      const finalCondA = condsA.length > 0 ? condsA.join(" && ") : "true";
+      const finalCondB = condsB.length > 0 ? condsB.join(" && ") : "false";
 
       const code = `//+------------------------------------------------------------------+
 //|                                  Akato_Generated_EA.mq4          |
@@ -498,14 +544,11 @@
 input double   InpLots          = ${lots};       // ロット数
 input int      InpMagicNumber   = ${magic}; // マジックナンバー
 
-// --- 条件1 (RSI) ---
-input int      InpRSI_Period    = ${periodRsi};        // RSI期間
-input double   InpRSI_ValA      = ${valA}.0;     // トリガーA 閾値
-input double   InpRSI_ValB      = ${valB}.0;     // トリガーB 閾値
-${smaInputDecl}
+${inputDecls.join("\n\n")}
+
 // --- 決済設定 ---
 input int      InpTakeProfitPips= ${tp};       // 利確 (pips)
-input int      InpStopLossPips  = ${sl};       // 損切 (pips)
+input int      InpStopLossPips  = ${sl};       // 损切 (pips)
 
 datetime lastBarTime;
 
@@ -521,16 +564,16 @@ ${timingCheckCode}
    if(OrdersTotal() > 0) return;
 
    // インジケーター値の取得
-   double rsi = iRSI(Symbol(), ${tfArg}, InpRSI_Period, PRICE_CLOSE, ${shiftVal});
-${smaGetCode}
+${indicatorGetCodes.join("\n")}
+
    // --- エントリー条件判定 ---
    // トリガーA 判定
-   if(${condA})
+   if(${finalCondA})
    {
 ${codeA}
    }
    // トリガーB 判定
-   else if(${condB})
+   else if(${finalCondB})
    {
 ${codeB}
    }
@@ -552,7 +595,7 @@ ${codeB}
     }
 
     window.onload = function() {
-      toggleSmaInputs();
+      togglePanels();
       generateMQL4();
     };
   </script>
