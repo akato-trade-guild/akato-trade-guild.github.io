@@ -10,6 +10,7 @@
       --card-bg: #111827;
       --accent-blue: #00f0ff;
       --accent-green: #00ff66;
+      --accent-red: #ff3366;
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
       --border-color: #1f2937;
@@ -131,6 +132,29 @@
       gap: 16px;
     }
 
+    .condition-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .condition-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .flex-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
     /* 生成ボタン */
     .btn-generate {
       width: 100%;
@@ -185,7 +209,7 @@
     }
 
     @media (max-width: 600px) {
-      .form-row { grid-template-columns: 1fr; }
+      .form-row, .flex-inputs { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -251,16 +275,56 @@
         <input type="number" id="inpRsiPeriod" value="2">
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label>買いエントリー条件 (RSIがこの値以下で買)</label>
-          <input type="number" id="inpRsiLower" value="10">
-        </div>
-        <div class="form-group">
-          <label>売りエントリー条件 (RSIがこの値以上で売)</label>
-          <input type="number" id="inpRsiUpper" value="90">
+      <!-- 条件A -->
+      <div class="condition-box">
+        <div class="condition-title" style="color: var(--accent-blue);">🔵 条件A（トリガー1）</div>
+        <div class="flex-inputs">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>RSI数値</label>
+            <input type="number" id="inpRsiValA" value="10">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>判定</label>
+            <select id="inpRsiOpA">
+              <option value="<=" selected>以下 (<=)</option>
+              <option value=">=">以上 (>=)</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>注文種別</label>
+            <select id="inpOrderTypeA">
+              <option value="BUY" selected>買い (BUY)</option>
+              <option value="SELL">売り (SELL)</option>
+            </select>
+          </div>
         </div>
       </div>
+
+      <!-- 条件B -->
+      <div class="condition-box">
+        <div class="condition-title" style="color: var(--accent-red);">🔴 条件B（トリガー2）</div>
+        <div class="flex-inputs">
+          <div class="form-group" style="margin-bottom:0;">
+            <label>RSI数値</label>
+            <input type="number" id="inpRsiValB" value="90">
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>判定</label>
+            <select id="inpRsiOpB">
+              <option value="<=">以下 (<=)</option>
+              <option value=">=" selected>以上 (>=)</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label>注文種別</label>
+            <select id="inpOrderTypeB">
+              <option value="BUY">買い (BUY)</option>
+              <option value="SELL" selected>売り (SELL)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- 4. 決済設定 -->
@@ -303,8 +367,15 @@
       const magic = document.getElementById('inpMagic').value;
       const timeframe = document.getElementById('inpTimeframe').value;
       const period = document.getElementById('inpRsiPeriod').value;
-      const upper = document.getElementById('inpRsiUpper').value;
-      const lower = document.getElementById('inpRsiLower').value;
+      
+      const valA = document.getElementById('inpRsiValA').value;
+      const opA = document.getElementById('inpRsiOpA').value;
+      const typeA = document.getElementById('inpOrderTypeA').value;
+
+      const valB = document.getElementById('inpRsiValB').value;
+      const opB = document.getElementById('inpRsiOpB').value;
+      const typeB = document.getElementById('inpOrderTypeB').value;
+
       const tp = document.getElementById('inpTp').value;
       const sl = document.getElementById('inpSl').value;
 
@@ -314,11 +385,29 @@
 
       if (timeframe === "PERIOD_CURRENT") {
         timingCheckCode = "   // 毎ティック判定\n";
-        shiftVal = 0; // リアルタイム判定
+        shiftVal = 0;
       } else {
         timingCheckCode = `   // ローソク足確定判定 (${timeframe})\n   if(iTime(Symbol(), ${timeframe}, 0) == lastBarTime) return;\n   lastBarTime = iTime(Symbol(), ${timeframe}, 0);\n`;
-        shiftVal = 1; // 確定足参照
+        shiftVal = 1;
       }
+
+      // エントリーロジック記述の生成
+      function buildOrderBlock(type, label) {
+        if (type === "BUY") {
+          return `      double ask = MarketInfo(Symbol(), MODE_ASK);\n` +
+                 `      double slPrice = (InpStopLossPips > 0) ? ask - (InpStopLossPips * Point * 10) : 0;\n` +
+                 `      double tpPrice = (InpTakeProfitPips > 0) ? ask + (InpTakeProfitPips * Point * 10) : 0;\n` +
+                 `      OrderSend(Symbol(), OP_BUY, InpLots, ask, 3, slPrice, tpPrice, "Guild_${label}_Buy", InpMagicNumber, 0, Blue);`;
+        } else {
+          return `      double bid = MarketInfo(Symbol(), MODE_SELL);\n` +
+                 `      double slPrice = (InpStopLossPips > 0) ? bid + (InpStopLossPips * Point * 10) : 0;\n` +
+                 `      double tpPrice = (InpTakeProfitPips > 0) ? bid - (InpTakeProfitPips * Point * 10) : 0;\n` +
+                 `      OrderSend(Symbol(), OP_SELL, InpLots, bid, 3, slPrice, tpPrice, "Guild_${label}_Sell", InpMagicNumber, 0, Red);`;
+        }
+      }
+
+      const codeA = buildOrderBlock(typeA, "TrigA");
+      const codeB = buildOrderBlock(typeB, "TrigB");
 
       const code = `//+------------------------------------------------------------------+
 //|                                  Akato_Generated_EA.mq4          |
@@ -336,8 +425,8 @@ input int      InpMagicNumber   = ${magic}; // マジックナンバー
 
 // --- 条件1 (RSI) ---
 input int      InpRSI_Period    = ${period};        // RSI期間
-input double   InpRSI_Upper     = ${upper}.0;     // 売り判定閾値
-input double   InpRSI_Lower     = ${lower}.0;     // 買い判定閾値
+input double   InpRSI_ValA      = ${valA}.0;     // トリガーA 閾値
+input double   InpRSI_ValB      = ${valB}.0;     // トリガーB 閾値
 
 // --- 決済設定 ---
 input int      InpTakeProfitPips= ${tp};       // 利確 (pips)
@@ -360,21 +449,15 @@ ${timingCheckCode}
    double rsi = iRSI(Symbol(), ${timeframe === "PERIOD_CURRENT" ? "0" : timeframe}, InpRSI_Period, PRICE_CLOSE, ${shiftVal});
 
    // --- エントリー条件判定 ---
-   // 買い判定
-   if(rsi <= InpRSI_Lower)
+   // トリガーA 判定
+   if(rsi ${opA} InpRSI_ValA)
    {
-      double ask = MarketInfo(Symbol(), MODE_ASK);
-      double slPrice = (InpStopLossPips > 0) ? ask - (InpStopLossPips * Point * 10) : 0;
-      double tpPrice = (InpTakeProfitPips > 0) ? ask + (InpTakeProfitPips * Point * 10) : 0;
-      OrderSend(Symbol(), OP_BUY, InpLots, ask, 3, slPrice, tpPrice, "Guild_EA_Buy", InpMagicNumber, 0, Blue);
+${codeA}
    }
-   // 売り判定
-   else if(rsi >= InpRSI_Upper)
+   // トリガーB 判定
+   else if(rsi ${opB} InpRSI_ValB)
    {
-      double bid = MarketInfo(Symbol(), MODE_SELL);
-      double slPrice = (InpStopLossPips > 0) ? bid + (InpStopLossPips * Point * 10) : 0;
-      double tpPrice = (InpTakeProfitPips > 0) ? bid - (InpTakeProfitPips * Point * 10) : 0;
-      OrderSend(Symbol(), OP_SELL, InpLots, bid, 3, slPrice, tpPrice, "Guild_EA_Sell", InpMagicNumber, 0, Red);
+${codeB}
    }
 }`;
 
@@ -393,7 +476,6 @@ ${timingCheckCode}
       });
     }
 
-    // 初期ロード時に1回生成
     window.onload = function() {
       generateMQL4();
     };
