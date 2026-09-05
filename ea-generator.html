@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ノーコードEA作成ツール | あかとのトレードギルド</title>
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: #111827;
+      --accent-blue: #00f0ff;
+      --accent-green: #00ff66;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #1f2937;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+
+    header {
+      border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+      background: rgba(17, 24, 39, 0.8);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .logo span {
+      color: var(--accent-blue);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 0.9rem;
+      transition: color 0.3s;
+    }
+
+    nav a:hover { color: var(--accent-blue); }
+
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      color: var(--accent-blue);
+      border-left: 4px solid var(--accent-blue);
+      padding-left: 12px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .template-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .btn-template {
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid var(--accent-blue);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-template:hover {
+      background: var(--accent-blue);
+      color: #000;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-group input, .form-group select {
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .btn-generate {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
+      color: #000;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: opacity 0.2s;
+    }
+
+    .btn-generate:hover { opacity: 0.9; }
+
+    textarea {
+      width: 100%;
+      height: 350px;
+      background: #080c14;
+      border: 1px solid var(--border-color);
+      color: var(--accent-green);
+      font-family: 'Consolas', 'Courier New', monospace;
+      padding: 16px;
+      border-radius: 8px;
+      box-sizing: border-box;
+      resize: vertical;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .btn-copy {
+      background: var(--accent-green);
+      color: #000;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-color);
+      margin-top: 60px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-container">
+      <a href="./index.html" class="logo">あかとの<span>トレードギルド</span></a>
+      <nav>
+        <a href="./index.html#tools">開発ツール</a>
+        <a href="./index.html#blog">開発記</a>
+        <a href="./index.html#request">依頼掲示板</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="section-title">⚡ ノーコードMQL4 EAジェネレーター</div>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px;">
+      パラメータを選択するだけで、安定稼働に対応したMQL4ソースコードを自動生成します。
+    </p>
+
+    <!-- 1. テンプレート呼び出し -->
+    <div class="panel">
+      <div style="font-weight: bold; margin-bottom: 12px; color: var(--accent-blue);">🚀 一撃テンプレート呼び出し</div>
+      <div class="template-group">
+        <button class="btn-template" onclick="loadRsi2Template()">【推奨】RSI2 極端逆張りロジック</button>
+        <button class="btn-template" onclick="loadRsi14Template()">RSI14 スタンダード逆張り</button>
+      </div>
+    </div>
+
+    <!-- 2. パラメータ設定エリア -->
+    <div class="panel">
+      <div style="font-weight: bold; margin-bottom: 16px; color: #fff;">⚙️ ロジック＆資金管理パラメーター</div>
+      
+      <div class="form-grid">
+        <div class="form-group">
+          <label>取引ロット数 (Lots)</label>
+          <input type="number" id="inpLots" value="0.1" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>RSI 期間 (Period)</label>
+          <input type="number" id="inpRsiPeriod" value="2">
+        </div>
+        <div class="form-group">
+          <label>売り判定閾値 (Upper / 逆張り売り)</label>
+          <input type="number" id="inpRsiUpper" value="90">
+        </div>
+        <div class="form-group">
+          <label>買い判定閾値 (Lower / 逆張り買い)</label>
+          <input type="number" id="inpRsiLower" value="10">
+        </div>
+        <div class="form-group">
+          <label>利確 (Take Profit / pips)</label>
+          <input type="number" id="inpTp" value="30">
+        </div>
+        <div class="form-group">
+          <label>損切 (Stop Loss / pips)</label>
+          <input type="number" id="inpSl" value="20">
+        </div>
+        <div class="form-group">
+          <label>判定タイミング (判定足)</label>
+          <select id="inpTimeframe">
+            <option value="PERIOD_M15" selected>15分足確定時 (推奨)</option>
+            <option value="PERIOD_M5">5分足確定時</option>
+            <option value="PERIOD_H1">1時間足確定時</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>マジックナンバー</label>
+          <input type="number" id="inpMagic" value="20260828">
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="chkBarCheck" checked>
+        <label for="chkBarCheck" style="font-size: 0.85rem; color: var(--accent-green);">
+          ローソク足確定時判定を有効化（ノイズや高頻度取引を抑止）
+        </label>
+      </div>
+
+      <button class="btn-generate" onclick="generateMQL4()">🔥 MQL4コードを生成する</button>
+    </div>
+
+    <!-- 3. コード出力エリア -->
+    <div class="panel">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="font-weight: bold; color: var(--accent-green);">📝 完成したMQL4ソースコード</div>
+        <span id="copyStatus" style="font-size: 0.85rem; color: var(--accent-blue);"></span>
+      </div>
+      <textarea id="codeOutput" readonly placeholder="上の「MQL4コードを生成する」ボタンを押すとここにコードが出力されます..."></textarea>
+      <button class="btn-copy" onclick="copyCode()">📋 コードをクリップボードにコピー</button>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>&copy; 2026 あかとのトレードギルド (Akato Trade Guild). All rights reserved.</p>
+  </footer>
+
+  <script>
+    function loadRsi2Template() {
+      document.getElementById('inpLots').value = 0.1;
+      document.getElementById('inpRsiPeriod').value = 2;
+      document.getElementById('inpRsiUpper').value = 90;
+      document.getElementById('inpRsiLower').value = 10;
+      document.getElementById('inpTp').value = 30;
+      document.getElementById('inpSl').value = 20;
+      document.getElementById('inpTimeframe').value = "PERIOD_M15";
+      document.getElementById('chkBarCheck').checked = true;
+      generateMQL4();
+    }
+
+    function loadRsi14Template() {
+      document.getElementById('inpLots').value = 0.1;
+      document.getElementById('inpRsiPeriod').value = 14;
+      document.getElementById('inpRsiUpper').value = 70;
+      document.getElementById('inpRsiLower').value = 30;
+      document.getElementById('inpTp').value = 40;
+      document.getElementById('inpSl').value = 30;
+      document.getElementById('inpTimeframe').value = "PERIOD_M15";
+      document.getElementById('chkBarCheck').checked = true;
+      generateMQL4();
+    }
+
+    function generateMQL4() {
+      const lots = document.getElementById('inpLots').value;
+      const period = document.getElementById('inpRsiPeriod').value;
+      const upper = document.getElementById('inpRsiUpper').value;
+      const lower = document.getElementById('inpRsiLower').value;
+      const tp = document.getElementById('inpTp').value;
+      const sl = document.getElementById('inpSl').value;
+      const timeframe = document.getElementById('inpTimeframe').value;
+      const magic = document.getElementById('inpMagic').value;
+      const useBarCheck = document.getElementById('chkBarCheck').checked;
+
+      let barCheckCode = useBarCheck ? 
+        `   // ローソク足確定判定（確定タイミングで1回のみ動作）\n   if(iTime(Symbol(), ${timeframe}, 0) == lastBarTime) return;\n   lastBarTime = iTime(Symbol(), ${timeframe}, 0);\n` : '';
+
+      const code = `//+------------------------------------------------------------------+
+//|                                  Akato_Generated_EA.mq4          |
+//|                                  あかとのトレードギルド           |
+//|                                  https://akato-trade-guild.github.io/
+//+------------------------------------------------------------------+
+#property copyright "あかとのトレードギルド"
+#property link      "https://akato-trade-guild.github.io/"
+#property version   "1.00"
+#property strict
+
+// --- パラメーター設定 ---
+input double   InpLots          = ${lots};       // ロット数
+input int      InpRSI_Period    = ${period};        // RSI期間
+input double   InpRSI_Upper     = ${upper}.0;     // 売り閾値 (逆張り)
+input double   InpRSI_Lower     = ${lower}.0;     // 買い閾値 (逆張り)
+input int      InpTakeProfitPips= ${tp};       // テイクプロフィット (pips)
+input int      InpStopLossPips  = ${sl};       // ストップロス (pips)
+input int      InpMagicNumber   = ${magic}; // マジックナンバー
+
+datetime lastBarTime;
+
+int OnInit()
+{
+   return(INIT_SUCCEEDED);
+}
+
+void OnTick()
+{
+${barCheckCode}
+   // 既存ポジションがある場合は重複エントリーを回避
+   if(OrdersTotal() > 0) return;
+
+   // RSI値取得 (確定足 shift=1)
+   double rsi = iRSI(Symbol(), ${timeframe}, InpRSI_Period, PRICE_CLOSE, 1);
+
+   // --- エントリー条件判定 ---
+   // RSIが ${lower} 以下 ➔ 買エントリー
+   if(rsi <= InpRSI_Lower)
+   {
+      double ask = MarketInfo(Symbol(), MODE_ASK);
+      double slPrice = ask - (InpStopLossPips * Point * 10);
+      double tpPrice = ask + (InpTakeProfitPips * Point * 10);
+      OrderSend(Symbol(), OP_BUY, InpLots, ask, 3, slPrice, tpPrice, "Guild_RSI_Buy", InpMagicNumber, 0, Blue);
+   }
+   // RSIが ${upper} 以上 ➔ 売エントリー
+   else if(rsi >= InpRSI_Upper)
+   {
+      double bid = MarketInfo(Symbol(), MODE_SELL);
+      double slPrice = bid + (InpStopLossPips * Point * 10);
+      double tpPrice = bid - (InpTakeProfitPips * Point * 10);
+      OrderSend(Symbol(), OP_SELL, InpLots, bid, 3, slPrice, tpPrice, "Guild_RSI_Sell", InpMagicNumber, 0, Red);
+   }
+}`;
+
+      document.getElementById('codeOutput').value = code;
+    }
+
+    function copyCode() {
+      const codeTextarea = document.getElementById('codeOutput');
+      if(!codeTextarea.value) return;
+
+      codeTextarea.select();
+      navigator.clipboard.writeText(codeTextarea.value).then(() => {
+        const status = document.getElementById('copyStatus');
+        status.innerText = "✓ クリップボードにコピーしました！";
+        setTimeout(() => { status.innerText = ''; }, 3000);
+      });
+    }
+
+    window.onload = function() {
+      loadRsi2Template();
+    };
+  </script>
+</body>
+</html>
