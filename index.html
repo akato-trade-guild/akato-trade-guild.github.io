@@ -74,7 +74,7 @@
       padding: 0 20px;
     }
 
-    /* ヒーローエリア（画像対応版） */
+    /* ヒーローエリア */
     .hero {
       background: linear-gradient(135deg, rgba(0, 240, 255, 0.08) 0%, rgba(0, 255, 102, 0.05) 100%);
       border: 1px solid rgba(0, 240, 255, 0.3);
@@ -217,13 +217,39 @@
       .hero-character { width: 160px; }
     }
 
+    /* フッター・免責事項 */
     footer {
-      text-align: center;
-      padding: 40px 0;
-      color: var(--text-muted);
-      font-size: 0.85rem;
       border-top: 1px solid var(--border-color);
       margin-top: 60px;
+      padding: 40px 20px;
+      background: rgba(11, 15, 25, 0.8);
+    }
+
+    .footer-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .disclaimer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: left;
+    }
+
+    .disclaimer strong {
+      color: var(--text-main);
+    }
+
+    .copyright {
+      color: var(--text-muted);
+      font-size: 0.85rem;
     }
   </style>
 </head>
@@ -242,7 +268,7 @@
   </header>
 
   <div class="container">
-    <!-- ヒーローエリア（画像配置版） -->
+    <!-- ヒーローエリア -->
     <div class="hero">
       <div class="hero-content">
         <span class="status-badge">SYSTEM: ONLINE</span>
@@ -324,8 +350,19 @@
     </div>
   </div>
 
+  <!-- フッターエリア -->
   <footer>
-    <p>&copy; 2026 あかとのトレードギルド (Akato Trade Guild). All rights reserved.</p>
+    <div class="footer-inner">
+      <!-- 免責事項 -->
+      <div class="disclaimer">
+        <strong>【免責事項】</strong><br>
+        当サイトで提供するシミュレーター、EA生成ツール、インジケーター、および各種情報は、投資判断の参考となる情報提供を目的として作成されたものであり、投資勧誘や特定の取引・利益を保証するものではありません。<br>
+        FX（外国為替証拠金取引）および暗号資産取引には重大な損失リスクが伴います。売買・運用の最終的な判断は、必ずご自身の責任とリスク管理のもとで行ってください。当サイトのツールや掲載情報の利用によって生じた直接的・間接的な損害および不利益について、サイト管理者は一切の責任を負いかねますので予めご了承ください。
+      </div>
+
+      <!-- 著作権表示 -->
+      <p class="copyright">&copy; 2026 あかとのトレードギルド (Akato Trade Guild). All rights reserved.</p>
+    </div>
   </footer>
 
 <script>
