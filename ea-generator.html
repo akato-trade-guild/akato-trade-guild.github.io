@@ -109,7 +109,6 @@
       font-weight: bold;
     }
 
-    /* チェックボックス選択グリッド */
     .indicator-selector {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -141,7 +140,6 @@
       cursor: pointer;
     }
 
-    /* フォーム要素 */
     .form-group {
       display: flex;
       flex-direction: column;
@@ -194,7 +192,6 @@
       gap: 10px;
     }
 
-    /* 生成ボタン */
     .btn-generate {
       width: 100%;
       background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
@@ -211,7 +208,6 @@
 
     .btn-generate:hover { opacity: 0.9; }
 
-    /* 出力エリア */
     textarea {
       width: 100%;
       height: 380px;
@@ -268,7 +264,7 @@
   <div class="container">
     <div class="section-title">⚡ ノーコードMQL4 EAジェネレーター</div>
     <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 30px;">
-      パラメータを設定して「MQL4コードを生成する」を押すだけで、EAのソースコードが完成します。
+      パラメータを設定して「MQL4コードを生成する」を押すだけで、安全性の高いEAソースコードが完成します。
     </p>
 
     <!-- 1. 基本設定 -->
@@ -284,17 +280,27 @@
           <input type="number" id="inpMagic" value="20260828">
         </div>
       </div>
-      <div class="form-group" style="margin-bottom:0;">
-        <label>エントリー判定を行うタイミング</label>
-        <select id="inpTimeframe">
-          <option value="PERIOD_CURRENT">ティックごと（毎価格更新時）</option>
-          <option value="PERIOD_M1">1分足 確定時</option>
-          <option value="PERIOD_M5">5分足 確定時</option>
-          <option value="PERIOD_M15" selected>15分足 確定時（推奨）</option>
-          <option value="PERIOD_M30">30分足 確定時</option>
-          <option value="PERIOD_H1">1時間足 確定時</option>
-          <option value="PERIOD_D1">日足 確定時</option>
-        </select>
+      <div class="form-row">
+        <div class="form-group">
+          <label>取引方向モード</label>
+          <select id="inpTradeDirection">
+            <option value="BOTH" selected>買い・売り 両方</option>
+            <option value="BUY_ONLY">買いのみ（ロング専用）</option>
+            <option value="SELL_ONLY">売りのみ（ショート専用）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>エントリー判定を行うタイミング</label>
+          <select id="inpTimeframe">
+            <option value="PERIOD_CURRENT">ティックごと（毎価格更新時）</option>
+            <option value="PERIOD_M1">1分足 確定時</option>
+            <option value="PERIOD_M5">5分足 確定時</option>
+            <option value="PERIOD_M15" selected>15分足 確定時（推奨）</option>
+            <option value="PERIOD_M30">30分足 確定時</option>
+            <option value="PERIOD_H1">1時間足 確定時</option>
+            <option value="PERIOD_D1">日足 確定時</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -344,7 +350,7 @@
       </div>
     </div>
 
-    <!-- 動的パネル: SMA（トレンド系を先に配置） -->
+    <!-- 動的パネル: SMA -->
     <div class="panel" id="panelSma">
       <div class="panel-header">📈 条件: SMA (単純移動平均線)</div>
       <div class="form-group">
@@ -466,7 +472,6 @@
   </footer>
 
   <script>
-    // パネルの表示/非表示切り替え
     function togglePanels() {
       const isRsi = document.getElementById('chkRsi').checked;
       const isSma = document.getElementById('chkSma').checked;
@@ -479,6 +484,7 @@
       const lots = document.getElementById('inpLots').value;
       const magic = document.getElementById('inpMagic').value;
       const timeframe = document.getElementById('inpTimeframe').value;
+      const dirMode = document.getElementById('inpTradeDirection').value;
       
       const isRsi = document.getElementById('chkRsi').checked;
       const isSma = document.getElementById('chkSma').checked;
@@ -499,13 +505,11 @@
 
       const tfArg = timeframe === "PERIOD_CURRENT" ? "0" : timeframe;
 
-      // 各条件配列
       let condsA = [];
       let condsB = [];
       let inputDecls = [];
       let indicatorGetCodes = [];
 
-      // SMAの処理（トレンド系先頭）
       if (isSma) {
         const periodSma = document.getElementById('inpSmaPeriod').value;
         const smaOpA = document.getElementById('inpSmaOpA').value;
@@ -517,7 +521,6 @@
         condsB.push(`closePrice ${smaOpB} sma`);
       }
 
-      // RSIの処理（オシレーター系）
       if (isRsi) {
         const periodRsi = document.getElementById('inpRsiPeriod').value;
         const valA = document.getElementById('inpRsiValA').value;
@@ -531,30 +534,36 @@
         condsB.push(`rsi ${opB} InpRSI_ValB`);
       }
 
-      // 注文タイプ取得
       const typeA = isRsi ? document.getElementById('inpOrderTypeA').value : "BUY";
       const typeB = isRsi ? document.getElementById('inpOrderTypeB').value : "SELL";
 
       function buildOrderBlock(type, label) {
         if (type === "BUY") {
           return `      double ask = MarketInfo(Symbol(), MODE_ASK);\n` +
-                 `      double slPrice = (InpStopLossPips > 0) ? ask - (InpStopLossPips * Point * 10) : 0;\n` +
-                 `      double tpPrice = (InpTakeProfitPips > 0) ? ask + (InpTakeProfitPips * Point * 10) : 0;\n` +
-                 `      OrderSend(Symbol(), OP_BUY, InpLots, ask, 3, slPrice, tpPrice, "Guild_${label}_Buy", InpMagicNumber, 0, Blue);`;
+                 `      double slPrice = (InpStopLossPips > 0) ? NormalizeDouble(ask - (InpStopLossPips * pips), Digits) : 0;\n` +
+                 `      double tpPrice = (InpTakeProfitPips > 0) ? NormalizeDouble(ask + (InpTakeProfitPips * pips), Digits) : 0;\n` +
+                 `      int ticket = OrderSend(Symbol(), OP_BUY, InpLots, ask, 3, slPrice, tpPrice, "Guild_${label}_Buy", InpMagicNumber, 0, Blue);\n` +
+                 `      if(ticket < 0) Print("BUY注文失敗 Error: ", GetLastError());`;
         } else {
-          return `      double bid = MarketInfo(Symbol(), MODE_SELL);\n` +
-                 `      double slPrice = (InpStopLossPips > 0) ? bid + (InpStopLossPips * Point * 10) : 0;\n` +
-                 `      double tpPrice = (InpTakeProfitPips > 0) ? bid - (InpTakeProfitPips * Point * 10) : 0;\n` +
-                 `      OrderSend(Symbol(), OP_SELL, InpLots, bid, 3, slPrice, tpPrice, "Guild_${label}_Sell", InpMagicNumber, 0, Red);`;
+          return `      double bid = MarketInfo(Symbol(), MODE_BID);\n` +
+                 `      double slPrice = (InpStopLossPips > 0) ? NormalizeDouble(bid + (InpStopLossPips * pips), Digits) : 0;\n` +
+                 `      double tpPrice = (InpTakeProfitPips > 0) ? NormalizeDouble(bid - (InpTakeProfitPips * pips), Digits) : 0;\n` +
+                 `      int ticket = OrderSend(Symbol(), OP_SELL, InpLots, bid, 3, slPrice, tpPrice, "Guild_${label}_Sell", InpMagicNumber, 0, Red);\n` +
+                 `      if(ticket < 0) Print("SELL注文失敗 Error: ", GetLastError());`;
         }
       }
 
       const codeA = buildOrderBlock(typeA, "TrigA");
       const codeB = buildOrderBlock(typeB, "TrigB");
 
-      // 最終条件文の合成
-      const finalCondA = condsA.length > 0 ? condsA.join(" && ") : "true";
-      const finalCondB = condsB.length > 0 ? condsB.join(" && ") : "false";
+      let finalCondA = condsA.length > 0 ? condsA.join(" && ") : "true";
+      let finalCondB = condsB.length > 0 ? condsB.join(" && ") : "false";
+
+      if (dirMode === "BUY_ONLY") {
+        finalCondB = "false";
+      } else if (dirMode === "SELL_ONLY") {
+        finalCondA = "false";
+      }
 
       const code = `//+------------------------------------------------------------------+
 //|                                  Akato_Generated_EA.mq4          |
@@ -577,19 +586,37 @@ input int      InpTakeProfitPips= ${tp};       // 利確 (pips)
 input int      InpStopLossPips  = ${sl};       // 損切 (pips)
 
 datetime lastBarTime;
+double pips;
 
 int OnInit()
 {
+   if(Digits == 3 || Digits == 5)
+      pips = Point * 10;
+   else
+      pips = Point;
+
    return(INIT_SUCCEEDED);
+}
+
+int CountMyOrders()
+{
+   int count = 0;
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+   {
+      if(OrderSelect(i, SELECT_BY_POS, MODE_TRADES))
+      {
+         if(OrderSymbol() == Symbol() && OrderMagicNumber() == InpMagicNumber)
+            count++;
+      }
+   }
+   return count;
 }
 
 void OnTick()
 {
 ${timingCheckCode}
-   // 既存ポジションがある場合はスキップ
-   if(OrdersTotal() > 0) return;
+   if(CountMyOrders() > 0) return;
 
-   // インジケーター値の取得
 ${indicatorGetCodes.join("\n")}
 
    // --- エントリー条件判定 ---
