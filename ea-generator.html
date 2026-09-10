@@ -8,11 +8,13 @@
     :root {
       --bg-color: #0b0f19;
       --card-bg: #111827;
+      --card-bg-soft: #0d1420;
       --accent-blue: #00f0ff;
       --accent-green: #00ff66;
       --accent-red: #ff3366;
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
+      --text-faint: #5b6472;
       --border-color: #1f2937;
     }
 
@@ -82,6 +84,21 @@
       letter-spacing: 1px;
     }
 
+    /* ===== ステップ番号バッジ（共通） ===== */
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 0.75rem;
+      font-weight: 800;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ===== 基本パネル ===== */
     .panel {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
@@ -102,44 +119,155 @@
       gap: 8px;
     }
 
+    /* ===== 1. 基本パラメーター：控えめ・コンパクトに ===== */
+    .panel-compact {
+      background: var(--card-bg-soft);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+    }
+
+    .panel-compact .panel-header {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-compact .step-badge {
+      width: 16px;
+      height: 16px;
+      font-size: 0.65rem;
+      background: var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .panel-compact .form-group label {
+      font-size: 0.75rem;
+    }
+
+    .panel-compact .form-group input,
+    .panel-compact .form-group select {
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      background: #0a0e17;
+    }
+
+    .panel-compact .form-group { margin-bottom: 10px; }
+    .panel-compact .form-row { gap: 12px; margin-bottom: 0; }
+    .panel-compact .form-row + .form-row { margin-top: 10px; }
+
+    /* ===== 2. インジケーター選択：主役として拡大 ===== */
+    .panel-hero {
+      background: radial-gradient(circle at top left, rgba(0, 240, 255, 0.07), var(--card-bg) 55%);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 16px;
+      padding: 30px 28px;
+      margin-bottom: 28px;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.06);
+    }
+
+    .panel-hero .panel-header {
+      font-size: 1.3rem;
+      color: #fff;
+      border-bottom: none;
+      margin-bottom: 6px;
+      padding-bottom: 0;
+    }
+
+    .panel-hero .step-badge {
+      background: var(--accent-blue);
+      color: #000;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+    }
+
+    .panel-hero .hero-sub {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0 0 20px 30px;
+    }
+
     .indicator-group-title {
       font-size: 0.8rem;
       color: var(--accent-blue);
-      margin: 12px 0 6px 0;
+      margin: 16px 0 10px 0;
       font-weight: bold;
+      letter-spacing: 0.5px;
     }
 
     .indicator-selector {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 14px;
       margin-bottom: 12px;
     }
 
     .checkbox-card {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border-color);
-      padding: 12px 16px;
-      border-radius: 8px;
+      padding: 16px 18px;
+      border-radius: 10px;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       transition: all 0.2s;
+      font-size: 1rem;
     }
+
+    .checkbox-card span { font-size: 1rem; }
 
     .checkbox-card:hover {
       border-color: var(--accent-blue);
-      background: rgba(0, 240, 255, 0.05);
+      background: rgba(0, 240, 255, 0.06);
+      transform: translateY(-2px);
     }
 
     .checkbox-card input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       accent-color: var(--accent-blue);
       cursor: pointer;
     }
 
+    /* チェック済みカードを光らせる */
+    .checkbox-card:has(input:checked) {
+      border-color: var(--accent-blue);
+      background: rgba(0, 240, 255, 0.09);
+      box-shadow: 0 0 18px rgba(0, 240, 255, 0.25);
+    }
+
+    .checkbox-card:has(input:disabled) {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .checkbox-card:has(input:disabled):hover {
+      transform: none;
+      border-color: var(--border-color);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    /* ===== 動的パネル（SMA/RSI詳細）：中間の重み ===== */
+    .panel-detail {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-left: 3px solid var(--accent-blue);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 24px;
+      animation: slideDown 0.25s ease;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== 共通フォーム要素 ===== */
     .form-group {
       display: flex;
       flex-direction: column;
@@ -192,21 +320,28 @@
       gap: 10px;
     }
 
+    /* ===== 生成ボタン：最重要アクションとして最大化 ===== */
     .btn-generate {
       width: 100%;
       background: linear-gradient(135deg, var(--accent-blue), var(--accent-green));
       color: #000;
       border: none;
-      padding: 14px;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: bold;
+      padding: 18px;
+      border-radius: 10px;
+      font-size: 1.25rem;
+      font-weight: 800;
       cursor: pointer;
-      margin-top: 10px;
-      transition: opacity 0.2s;
+      margin-top: 14px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.25);
+      transition: all 0.2s;
     }
 
-    .btn-generate:hover { opacity: 0.9; }
+    .btn-generate:hover {
+      opacity: 0.92;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.4);
+      transform: translateY(-1px);
+    }
 
     textarea {
       width: 100%;
@@ -245,6 +380,7 @@
 
     @media (max-width: 600px) {
       .form-row, .flex-inputs { grid-template-columns: 1fr; }
+      .panel-hero { padding: 22px 18px; }
     }
   </style>
 </head>
@@ -267,9 +403,9 @@
       パラメータを設定して「MQL4コードを生成する」を押すだけで、安全性の高いEAソースコードが完成します。
     </p>
 
-    <!-- 1. 基本設定 -->
-    <div class="panel">
-      <div class="panel-header">⚙️ 1. 基本パラメーター設定</div>
+    <!-- 1. 基本設定：控えめ・コンパクトに -->
+    <div class="panel-compact">
+      <div class="panel-header"><span class="step-badge">1</span>基本パラメーター設定</div>
       <div class="form-row">
         <div class="form-group">
           <label>取引ロット数 (Lots)</label>
@@ -304,13 +440,13 @@
       </div>
     </div>
 
-    <!-- 2. 使用インジケーター選択 -->
-    <div class="panel">
-      <div class="panel-header">🧩 2. 使用するエントリー条件（複数選択可）</div>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-top:-8px; margin-bottom: 12px;">
-        チェックを入れた条件がすべて揃った時（AND条件）にエントリーします。
+    <!-- 2. 使用インジケーター選択：主役として拡大 -->
+    <div class="panel-hero">
+      <div class="panel-header"><span class="step-badge">2</span>🧩 使用するエントリー条件</div>
+      <p class="hero-sub">
+        チェックを入れた条件がすべて揃った時（AND条件）にエントリーします。複数選択可。
       </p>
-      
+
       <!-- トレンド系 -->
       <div class="indicator-group-title">【トレンド系】</div>
       <div class="indicator-selector">
@@ -318,15 +454,15 @@
           <input type="checkbox" id="chkSma" checked onchange="togglePanels()">
           <span>📈 SMA (移動平均線)</span>
         </label>
-        <label class="checkbox-card" style="opacity: 0.5; cursor: not-allowed;" title="今後実装予定">
+        <label class="checkbox-card" title="今後実装予定">
           <input type="checkbox" disabled>
           <span>📉 EMA (準備中)</span>
         </label>
-        <label class="checkbox-card" style="opacity: 0.5; cursor: not-allowed;" title="今後実装予定">
+        <label class="checkbox-card" title="今後実装予定">
           <input type="checkbox" disabled>
           <span>☁️ 一目均衡表 (準備中)</span>
         </label>
-        <label class="checkbox-card" style="opacity: 0.5; cursor: not-allowed;" title="今後実装予定">
+        <label class="checkbox-card" title="今後実装予定">
           <input type="checkbox" disabled>
           <span>📊 ボリバン (準備中)</span>
         </label>
@@ -335,7 +471,7 @@
       <!-- オシレーター系 -->
       <div class="indicator-group-title">【オシレーター系】</div>
       <div class="indicator-selector">
-        <label class="checkbox-card" style="opacity: 0.5; cursor: not-allowed;" title="今後実装予定">
+        <label class="checkbox-card" title="今後実装予定">
           <input type="checkbox" disabled>
           <span>📐 DMI (準備中)</span>
         </label>
@@ -343,7 +479,7 @@
           <input type="checkbox" id="chkRsi" checked onchange="togglePanels()">
           <span>📊 RSI</span>
         </label>
-        <label class="checkbox-card" style="opacity: 0.5; cursor: not-allowed;" title="今後実装予定">
+        <label class="checkbox-card" title="今後実装予定">
           <input type="checkbox" disabled>
           <span>🌊 MACD (準備中)</span>
         </label>
@@ -351,7 +487,7 @@
     </div>
 
     <!-- 動的パネル: SMA -->
-    <div class="panel" id="panelSma">
+    <div class="panel-detail" id="panelSma">
       <div class="panel-header">📈 条件: SMA (単純移動平均線)</div>
       <div class="form-group">
         <label>SMA 期間 (Period)</label>
@@ -382,7 +518,7 @@
     </div>
 
     <!-- 動的パネル: RSI -->
-    <div class="panel" id="panelRsi">
+    <div class="panel-detail" id="panelRsi">
       <div class="panel-header">📊 条件: RSIオシレーター</div>
       <div class="form-group">
         <label>RSI 期間 (Period)</label>
@@ -440,7 +576,7 @@
 
     <!-- 3. 決済設定 -->
     <div class="panel">
-      <div class="panel-header">🛡️ 3. 決済パラメーター設定</div>
+      <div class="panel-header"><span class="step-badge" style="background:var(--border-color); color:var(--text-muted);">3</span>🛡️ 決済パラメーター設定</div>
       <div class="form-row">
         <div class="form-group">
           <label>利確 (Take Profit / pips)</label>
@@ -485,7 +621,7 @@
       const magic = document.getElementById('inpMagic').value;
       const timeframe = document.getElementById('inpTimeframe').value;
       const dirMode = document.getElementById('inpTradeDirection').value;
-      
+
       const isRsi = document.getElementById('chkRsi').checked;
       const isSma = document.getElementById('chkSma').checked;
 
