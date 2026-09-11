@@ -44,15 +44,24 @@
       margin-bottom: 30px;
     }
 
-    header h1 {
+    /* タイトルリンクのデザイン */
+    header h1 a {
       font-size: 2rem;
       color: var(--accent-color);
-      margin-bottom: 8px;
+      text-decoration: none;
+      transition: color 0.2s, opacity 0.2s;
+      display: inline-block;
+    }
+
+    header h1 a:hover {
+      color: #7dd3fc;
+      opacity: 0.9;
     }
 
     header p {
       color: var(--text-sub);
       font-size: 0.95rem;
+      margin-top: 8px;
     }
 
     .panel {
@@ -238,7 +247,8 @@
 
 <div class="container">
   <header>
-    <h1>あかとのトレードギルド</h1>
+    <!-- タイトルにホームへのリンクを追加 (hrefの中身を実際のホームURLに変更してください) -->
+    <h1><a href="#">あかとのトレードギルド</a></h1>
     <p>ノーコードEAジェネレーター (Ver 2.1 - 完全同期修正版)</p>
   </header>
 
