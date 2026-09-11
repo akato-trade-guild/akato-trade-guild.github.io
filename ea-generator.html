@@ -239,7 +239,7 @@
 <div class="container">
   <header>
     <h1>あかとのトレードギルド</h1>
-    <p>ノーコードEAジェネレーター (Ver 2.0)</p>
+    <p>ノーコードEAジェネレーター (Ver 2.1 - バグ修正版)</p>
   </header>
 
   <!-- Step 1: 基本パラメーター -->
@@ -263,6 +263,19 @@
         <input type="number" id="takeProfit" value="60">
       </div>
       <div class="form-group">
+        <label for="timeframe">時間軸 (タイムフレーム)</label>
+        <select id="timeframe">
+          <option value="0">チャート依存 (PERIOD_CURRENT)</option>
+          <option value="PERIOD_M1">1分足 (M1)</option>
+          <option value="PERIOD_M5">5分足 (M5)</option>
+          <option value="PERIOD_M15">15分足 (M15)</option>
+          <option value="PERIOD_M30">30分足 (M30)</option>
+          <option value="PERIOD_H1">1時間足 (H1)</option>
+          <option value="PERIOD_H4">4時間足 (H4)</option>
+          <option value="PERIOD_D1">日足 (D1)</option>
+        </select>
+      </div>
+      <div class="form-group">
         <label for="timing">判定タイミング</label>
         <select id="timing">
           <option value="bar">ローソク足確定時 (1号足)</option>
@@ -277,11 +290,11 @@
     <div class="panel-title">2. 使用するインジケーター</div>
     <div class="grid-2">
       <label class="checkbox-label">
-        <input type="checkbox" id="useRSI" onchange="toggleIndicators()">
+        <input type="checkbox" id="useRSI" onchange="toggleIndicatorMaster('RSI')">
         <span>RSI (相対力指数)</span>
       </label>
       <label class="checkbox-label">
-        <input type="checkbox" id="useSMA" onchange="toggleIndicators()">
+        <input type="checkbox" id="useSMA" onchange="toggleIndicatorMaster('SMA')">
         <span>SMA (単純移動平均線)</span>
       </label>
     </div>
@@ -308,7 +321,7 @@
             <strong>RSI条件を使用する</strong>
           </label>
         </div>
-        <div class="grid-2" id="buyRsiControls">
+        <div class="grid-2">
           <div class="form-group">
             <label>RSI期間</label>
             <input type="number" id="buyRsiPeriod" value="14">
@@ -335,7 +348,7 @@
             <strong>SMA条件を使用する</strong>
           </label>
         </div>
-        <div class="grid-2" id="buySmaControls">
+        <div class="grid-2">
           <div class="form-group">
             <label>SMA期間</label>
             <input type="number" id="buySmaPeriod" value="200">
@@ -368,7 +381,7 @@
             <strong>RSI条件を使用する</strong>
           </label>
         </div>
-        <div class="grid-2" id="sellRsiControls">
+        <div class="grid-2">
           <div class="form-group">
             <label>RSI期間</label>
             <input type="number" id="sellRsiPeriod" value="14">
@@ -395,7 +408,7 @@
             <strong>SMA条件を使用する</strong>
           </label>
         </div>
-        <div class="grid-2" id="sellSmaControls">
+        <div class="grid-2">
           <div class="form-group">
             <label>SMA期間</label>
             <input type="number" id="sellSmaPeriod" value="200">
@@ -428,54 +441,52 @@
 </div>
 
 <script>
-// UIの状態更新（連動処理・ガード機能）
-function toggleIndicators() {
-  const useRSI = document.getElementById('useRSI').checked;
-  const useSMA = document.getElementById('useSMA').checked;
-
-  // 上部のチェックに連動して下の表示を切り替え＆自動チェック設定
-  document.getElementById('buyRsiGroup').style.display = useRSI ? 'block' : 'none';
-  document.getElementById('sellRsiGroup').style.display = useRSI ? 'block' : 'none';
-  if (!useRSI) {
-    document.getElementById('buyUseRsi').checked = false;
-    document.getElementById('sellUseRsi').checked = false;
+// Masterインジケーター切り替え時の処理（親がONになったら子も自動でtrueに復元する）
+function toggleIndicatorMaster(type) {
+  if (type === 'RSI') {
+    const isChecked = document.getElementById('useRSI').checked;
+    document.getElementById('buyRsiGroup').style.display = isChecked ? 'block' : 'none';
+    document.getElementById('sellRsiGroup').style.display = isChecked ? 'block' : 'none';
+    // ONにしたら子チェックボックスもデフォルトONへ復元、OFFにしたら子もOFFへ
+    document.getElementById('buyUseRsi').checked = isChecked;
+    document.getElementById('sellUseRsi').checked = isChecked;
+  } 
+  else if (type === 'SMA') {
+    const isChecked = document.getElementById('useSMA').checked;
+    document.getElementById('buySmaGroup').style.display = isChecked ? 'block' : 'none';
+    document.getElementById('sellSmaGroup').style.display = isChecked ? 'block' : 'none';
+    document.getElementById('buyUseSma').checked = isChecked;
+    document.getElementById('sellUseSma').checked = isChecked;
   }
-
-  document.getElementById('buySmaGroup').style.display = useSMA ? 'block' : 'none';
-  document.getElementById('sellSmaGroup').style.display = useSMA ? 'block' : 'none';
-  if (!useSMA) {
-    document.getElementById('buyUseSma').checked = false;
-    document.getElementById('sellUseSma').checked = false;
-  }
-
   updateUI();
 }
 
+// UIの状態更新（ガード機能＆スタイルの反映）
 function updateUI() {
   const buyEnable = document.getElementById('buyEnable').checked;
   const sellEnable = document.getElementById('sellEnable').checked;
 
-  // 親チェックのON/OFFによるスタイルの有効/無効化
+  // 親チェックのON/OFFによる見た目のスタイリング
   document.getElementById('buyBox').classList.toggle('disabled', !buyEnable);
   document.getElementById('sellBox').classList.toggle('disabled', !sellEnable);
 
-  // ガード機能：条件が空でないかバリデーション
   const useRSI = document.getElementById('useRSI').checked;
   const useSMA = document.getElementById('useSMA').checked;
 
+  // 子要素が実質有効かどうかチェック
   const buyHasCondition = buyEnable && ((useRSI && document.getElementById('buyUseRsi').checked) || (useSMA && document.getElementById('buyUseSma').checked));
   const sellHasCondition = sellEnable && ((useRSI && document.getElementById('sellUseRsi').checked) || (useSMA && document.getElementById('sellUseSma').checked));
 
   const warningBox = document.getElementById('warningBox');
   const generateBtn = document.getElementById('generateBtn');
 
-  // 「買い・売り両方OFF」または「有効なのに子条件が0個」の場合はエラー
+  // バリデーションチェック
   let isValid = true;
   if (!buyEnable && !sellEnable) {
-    isValid = false;
+    isValid = false; // 買いも売りもOFFは不可
   }
-  if (buyEnable && !buyHasCondition) isValid = false;
-  if (sellEnable && !sellHasCondition) isValid = false;
+  if (buyEnable && !buyHasCondition) isValid = false; // 買いがONなのに中身が全部OFF
+  if (sellEnable && !sellHasCondition) isValid = false; // 売りがONなのに中身が全部OFF
 
   if (!isValid) {
     warningBox.style.display = 'block';
@@ -486,12 +497,13 @@ function updateUI() {
   }
 }
 
-// MQL4コードの動的生成処理
+// MQL4コード生成ロジック
 function generateEA() {
   const magic = document.getElementById('magicNumber').value;
   const lots = document.getElementById('lots').value;
   const sl = document.getElementById('stopLoss').value;
   const tp = document.getElementById('takeProfit').value;
+  const tf = document.getElementById('timeframe').value;
   const timing = document.getElementById('timing').value;
   const shift = (timing === 'bar') ? '1' : '0';
 
@@ -500,42 +512,42 @@ function generateEA() {
   const useRSI = document.getElementById('useRSI').checked;
   const useSMA = document.getElementById('useSMA').checked;
 
-  // 買いロジック構築
+  // 買い条件構文の生成
   let buyConds = [];
   if (buyEnable) {
     if (useRSI && document.getElementById('buyUseRsi').checked) {
       const p = document.getElementById('buyRsiPeriod').value;
       const l = document.getElementById('buyRsiLevel').value;
       const m = document.getElementById('buyRsiMode').value;
-      buyConds.push(`iRSI(Symbol(), 0, ${p}, PRICE_CLOSE, ${shift}) ${m} ${l}.0`);
+      buyConds.push(`iRSI(Symbol(), ${tf}, ${p}, PRICE_CLOSE, ${shift}) ${m} ${l}.0`);
     }
     if (useSMA && document.getElementById('buyUseSma').checked) {
       const p = document.getElementById('buySmaPeriod').value;
       const m = document.getElementById('buySmaMode').value;
-      buyConds.push(`iClose(Symbol(), 0, ${shift}) ${m} iMA(Symbol(), 0, ${p}, 0, MODE_SMA, PRICE_CLOSE, ${shift})`);
+      buyConds.push(`iClose(Symbol(), ${tf}, ${shift}) ${m} iMA(Symbol(), ${tf}, ${p}, 0, MODE_SMA, PRICE_CLOSE, ${shift})`);
     }
   }
 
-  // 売りロジック構築
+  // 売り条件構文の生成
   let sellConds = [];
   if (sellEnable) {
     if (useRSI && document.getElementById('sellUseRsi').checked) {
       const p = document.getElementById('sellRsiPeriod').value;
       const l = document.getElementById('sellRsiLevel').value;
       const m = document.getElementById('sellRsiMode').value;
-      sellConds.push(`iRSI(Symbol(), 0, ${p}, PRICE_CLOSE, ${shift}) ${m} ${l}.0`);
+      sellConds.push(`iRSI(Symbol(), ${tf}, ${p}, PRICE_CLOSE, ${shift}) ${m} ${l}.0`);
     }
     if (useSMA && document.getElementById('sellUseSma').checked) {
       const p = document.getElementById('sellSmaPeriod').value;
       const m = document.getElementById('sellSmaMode').value;
-      sellConds.push(`iClose(Symbol(), 0, ${shift}) ${m} iMA(Symbol(), 0, ${p}, 0, MODE_SMA, PRICE_CLOSE, ${shift})`);
+      sellConds.push(`iClose(Symbol(), ${tf}, ${shift}) ${m} iMA(Symbol(), ${tf}, ${p}, 0, MODE_SMA, PRICE_CLOSE, ${shift})`);
     }
   }
 
   const buyLogicStr = (buyConds.length > 0) ? buyConds.join(" && ") : "false";
   const sellLogicStr = (sellConds.length > 0) ? sellConds.join(" && ") : "false";
 
-  // MQL4 テンプレート生成
+  // MQL4ソースコード生成（NormalizeDouble / ErrorHandling 完全復元）
   const code = `//+------------------------------------------------------------------+
 //|                                    AkatoTradeGuild_EA.mq4       |
 //|                        Generated by あかとのトレードギルド      |
@@ -558,12 +570,13 @@ void OnDeinit(const int reason) {}
 
 void OnTick() {
    ${timing === 'bar' ? `
-   // ローソク足確定の判定
-   if(g_lastBarTime == iTime(Symbol(), 0, 0)) return;
-   g_lastBarTime = iTime(Symbol(), 0, 0);
+   // ローソク足確定の判定 (指定タイムフレームの確定足)
+   datetime currentBarTime = iTime(Symbol(), ${tf}, 0);
+   if(g_lastBarTime == currentBarTime) return;
+   g_lastBarTime = currentBarTime;
    ` : ''}
 
-   // ポジションチェック（既にポジションがある場合はスキップ）
+   // ポジションチェック（既にポジションがある場合は処理スキップ）
    if(CountMyOrders() > 0) return;
 
    double point = MarketInfo(Symbol(), MODE_POINT);
@@ -574,17 +587,23 @@ void OnTick() {
    bool isBuy  = ${buyLogicStr};
    bool isSell = ${sellLogicStr};
 
-   // 買い注文
+   // 買い注文処理
    if(isBuy) {
-      double slPrice = (InpStopLoss > 0) ? Ask - (InpStopLoss * point * pipsFactor) : 0;
-      double tpPrice = (InpTakeProfit > 0) ? Ask + (InpTakeProfit * point * pipsFactor) : 0;
+      double slPrice = (InpStopLoss > 0) ? NormalizeDouble(Ask - (InpStopLoss * point * pipsFactor), Digits) : 0;
+      double tpPrice = (InpTakeProfit > 0) ? NormalizeDouble(Ask + (InpTakeProfit * point * pipsFactor), Digits) : 0;
       int ticket = OrderSend(Symbol(), OP_BUY, InpLots, Ask, 3, slPrice, tpPrice, "ATG EA BUY", InpMagicNumber, 0, clrGreen);
+      if(ticket < 0) {
+         Print("BUY注文失敗 Error: ", GetLastError());
+      }
    }
-   // 売り注文
+   // 売り注文処理
    else if(isSell) {
-      double slPrice = (InpStopLoss > 0) ? Bid + (InpStopLoss * point * pipsFactor) : 0;
-      double tpPrice = (InpTakeProfit > 0) ? Bid - (InpTakeProfit * point * pipsFactor) : 0;
+      double slPrice = (InpStopLoss > 0) ? NormalizeDouble(Bid + (InpStopLoss * point * pipsFactor), Digits) : 0;
+      double tpPrice = (InpTakeProfit > 0) ? NormalizeDouble(Bid - (InpTakeProfit * point * pipsFactor), Digits) : 0;
       int ticket = OrderSend(Symbol(), OP_SELL, InpLots, Bid, 3, slPrice, tpPrice, "ATG EA SELL", InpMagicNumber, 0, clrRed);
+      if(ticket < 0) {
+         Print("SELL注文失敗 Error: ", GetLastError());
+      }
    }
 }
 
@@ -604,7 +623,7 @@ int CountMyOrders() {
   document.getElementById('mqlCode').textContent = code;
 }
 
-// コピー機能
+// コードコピー機能
 function copyCode() {
   const codeText = document.getElementById('mqlCode').textContent;
   navigator.clipboard.writeText(codeText).then(() => {
@@ -612,8 +631,8 @@ function copyCode() {
   });
 }
 
-// 初期実行
-toggleIndicators();
+// 初期化
+updateUI();
 </script>
 
 </body>
