@@ -50,6 +50,7 @@
       text-decoration: none;
       transition: color 0.2s, opacity 0.2s;
       display: inline-block;
+      cursor: pointer;
     }
 
     header h1 a:hover {
@@ -146,12 +147,6 @@
       background-color: var(--sell-bg);
     }
 
-    .condition-box.disabled {
-      opacity: 0.4;
-      pointer-events: none;
-      filter: grayscale(1);
-    }
-
     .condition-header {
       font-size: 1.1rem;
       font-weight: bold;
@@ -163,6 +158,13 @@
 
     .condition-header.buy-title { color: var(--buy-color); }
     .condition-header.sell-title { color: var(--sell-color); }
+
+    /* ボックス全体ではなく内部コンテンツのみ非活性化させるCSS */
+    .condition-box.disabled .condition-content {
+      opacity: 0.4;
+      pointer-events: none;
+      filter: grayscale(1);
+    }
 
     .indicator-child-item {
       background: rgba(15, 23, 42, 0.6);
@@ -242,7 +244,7 @@
 
 <div class="container">
   <header>
-    <h1><a href="https://akato-trade-guild.github.io/">あかとのトレードギルド</a></h1>
+    <h1><a href="https://akato-trade-guild.github.io/" target="_self">あかとのトレードギルド</a></h1>
     <p>ノーコードEAジェネレーター (Ver 2.1 - 完全同期・動作安定版)</p>
   </header>
 
@@ -317,52 +319,55 @@
         </label>
       </div>
 
-      <!-- 子項目: RSI (買い) -->
-      <div class="indicator-child-item" id="buyRsiGroup" style="display: none;">
-        <div class="child-header">
-          <label class="checkbox-label">
-            <input type="checkbox" id="buyUseRsi" checked onchange="updateUI()">
-            <strong>RSI条件を使用する</strong>
-          </label>
+      <!-- 制御・非活性化対象を包むコンテナ -->
+      <div class="condition-content">
+        <!-- 子項目: RSI (買い) -->
+        <div class="indicator-child-item" id="buyRsiGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label">
+              <input type="checkbox" id="buyUseRsi" checked onchange="updateUI()">
+              <strong>RSI条件を使用する</strong>
+            </label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>RSI期間</label>
+              <input type="number" id="buyRsiPeriod" value="14">
+            </div>
+            <div class="form-group">
+              <label>閾値 (レベル)</label>
+              <input type="number" id="buyRsiLevel" value="30">
+            </div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="buyRsiMode">
+                <option value="<=">以下で買い (逆張り)</option>
+                <option value=">=">以上で買い (順張り)</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>RSI期間</label>
-            <input type="number" id="buyRsiPeriod" value="14">
-          </div>
-          <div class="form-group">
-            <label>閾値 (レベル)</label>
-            <input type="number" id="buyRsiLevel" value="30">
-          </div>
-          <div class="form-group">
-            <label>判定</label>
-            <select id="buyRsiMode">
-              <option value="<=">以下で買い (逆張り)</option>
-              <option value=">=">以上で買い (順張り)</option>
-            </select>
-          </div>
-        </div>
-      </div>
 
-      <!-- 子項目: SMA (買い) -->
-      <div class="indicator-child-item" id="buySmaGroup" style="display: none;">
-        <div class="child-header">
-          <label class="checkbox-label">
-            <input type="checkbox" id="buyUseSma" checked onchange="updateUI()">
-            <strong>SMA条件を使用する</strong>
-          </label>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>SMA期間</label>
-            <input type="number" id="buySmaPeriod" value="200">
+        <!-- 子項目: SMA (買い) -->
+        <div class="indicator-child-item" id="buySmaGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label">
+              <input type="checkbox" id="buyUseSma" checked onchange="updateUI()">
+              <strong>SMA条件を使用する</strong>
+            </label>
           </div>
-          <div class="form-group">
-            <label>価格位置関係</label>
-            <select id="buySmaMode">
-              <option value=">">終値がSMAより上</option>
-              <option value="<">終値がSMAより下</option>
-            </select>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>SMA期間</label>
+              <input type="number" id="buySmaPeriod" value="200">
+            </div>
+            <div class="form-group">
+              <label>価格位置関係</label>
+              <select id="buySmaMode">
+                <option value=">">終値がSMAより上</option>
+                <option value="<">終値がSMAより下</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -377,52 +382,55 @@
         </label>
       </div>
 
-      <!-- 子項目: RSI (売り) -->
-      <div class="indicator-child-item" id="sellRsiGroup" style="display: none;">
-        <div class="child-header">
-          <label class="checkbox-label">
-            <input type="checkbox" id="sellUseRsi" checked onchange="updateUI()">
-            <strong>RSI条件を使用する</strong>
-          </label>
+      <!-- 制御・非活性化対象を包むコンテナ -->
+      <div class="condition-content">
+        <!-- 子項目: RSI (売り) -->
+        <div class="indicator-child-item" id="sellRsiGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label">
+              <input type="checkbox" id="sellUseRsi" checked onchange="updateUI()">
+              <strong>RSI条件を使用する</strong>
+            </label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>RSI期間</label>
+              <input type="number" id="sellRsiPeriod" value="14">
+            </div>
+            <div class="form-group">
+              <label>閾値 (レベル)</label>
+              <input type="number" id="sellRsiLevel" value="70">
+            </div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="sellRsiMode">
+                <option value=">=">以上で売り (逆張り)</option>
+                <option value="<=">以下で売り (順張り)</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>RSI期間</label>
-            <input type="number" id="sellRsiPeriod" value="14">
-          </div>
-          <div class="form-group">
-            <label>閾値 (レベル)</label>
-            <input type="number" id="sellRsiLevel" value="70">
-          </div>
-          <div class="form-group">
-            <label>判定</label>
-            <select id="sellRsiMode">
-              <option value=">=">以上で売り (逆張り)</option>
-              <option value="<=">以下で売り (順張り)</option>
-            </select>
-          </div>
-        </div>
-      </div>
 
-      <!-- 子項目: SMA (売り) -->
-      <div class="indicator-child-item" id="sellSmaGroup" style="display: none;">
-        <div class="child-header">
-          <label class="checkbox-label">
-            <input type="checkbox" id="sellUseSma" checked onchange="updateUI()">
-            <strong>SMA条件を使用する</strong>
-          </label>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label>SMA期間</label>
-            <input type="number" id="sellSmaPeriod" value="200">
+        <!-- 子項目: SMA (売り) -->
+        <div class="indicator-child-item" id="sellSmaGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label">
+              <input type="checkbox" id="sellUseSma" checked onchange="updateUI()">
+              <strong>SMA条件を使用する</strong>
+            </label>
           </div>
-          <div class="form-group">
-            <label>価格位置関係</label>
-            <select id="sellSmaMode">
-              <option value="<">終値がSMAより下</option>
-              <option value=">">終値がSMAより上</option>
-            </select>
+          <div class="grid-2">
+            <div class="form-group">
+              <label>SMA期間</label>
+              <input type="number" id="sellSmaPeriod" value="200">
+            </div>
+            <div class="form-group">
+              <label>価格位置関係</label>
+              <select id="sellSmaMode">
+                <option value="<">終値がSMAより下</option>
+                <option value=">">終値がSMAより上</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
