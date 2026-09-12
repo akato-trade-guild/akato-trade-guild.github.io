@@ -159,7 +159,6 @@
     .condition-header.buy-title { color: var(--buy-color); }
     .condition-header.sell-title { color: var(--sell-color); }
 
-    /* ボックス全体ではなく内部コンテンツのみ非活性化させるCSS */
     .condition-box.disabled .condition-content {
       opacity: 0.4;
       pointer-events: none;
@@ -296,12 +295,36 @@
     <div class="panel-title">2. 使用するインジケーター</div>
     <div class="grid-2">
       <label class="checkbox-label">
+        <input type="checkbox" id="useSMA" onchange="toggleIndicatorMaster('SMA')">
+        <span>SMA (単純移動平均線)</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="useEMA" onchange="toggleIndicatorMaster('EMA')">
+        <span>EMA (指数移動平均線)</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="useIchimoku" onchange="toggleIndicatorMaster('Ichimoku')">
+        <span>一目均衡表</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="useBands" onchange="toggleIndicatorMaster('Bands')">
+        <span>ボリンジャーバンド</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="useDMI" onchange="toggleIndicatorMaster('DMI')">
+        <span>DMI / ADX</span>
+      </label>
+      <label class="checkbox-label">
+        <input type="checkbox" id="useKDJ" onchange="toggleIndicatorMaster('KDJ')">
+        <span>KDJ (ストキャス)</span>
+      </label>
+      <label class="checkbox-label">
         <input type="checkbox" id="useRSI" onchange="toggleIndicatorMaster('RSI')">
         <span>RSI (相対力指数)</span>
       </label>
       <label class="checkbox-label">
-        <input type="checkbox" id="useSMA" onchange="toggleIndicatorMaster('SMA')">
-        <span>SMA (単純移動平均線)</span>
+        <input type="checkbox" id="useMACD" onchange="toggleIndicatorMaster('MACD')">
+        <span>MACD</span>
       </label>
     </div>
   </div>
@@ -319,25 +342,117 @@
         </label>
       </div>
 
-      <!-- 制御・非活性化対象を包むコンテナ -->
       <div class="condition-content">
-        <!-- 子項目: RSI (買い) -->
-        <div class="indicator-child-item" id="buyRsiGroup" style="display: none;">
+        <!-- SMA (買い) -->
+        <div class="indicator-child-item" id="buySmaGroup" style="display: none;">
           <div class="child-header">
-            <label class="checkbox-label">
-              <input type="checkbox" id="buyUseRsi" checked onchange="updateUI()">
-              <strong>RSI条件を使用する</strong>
-            </label>
+            <label class="checkbox-label"><input type="checkbox" id="buyUseSma" checked onchange="updateUI()"><strong>SMA条件を使用する</strong></label>
           </div>
           <div class="grid-2">
+            <div class="form-group"><label>SMA期間</label><input type="number" id="buySmaPeriod" value="200"></div>
             <div class="form-group">
-              <label>RSI期間</label>
-              <input type="number" id="buyRsiPeriod" value="14">
+              <label>価格位置関係</label>
+              <select id="buySmaMode">
+                <option value=">">終値がSMAより上</option>
+                <option value="<">終値がSMAより下</option>
+              </select>
             </div>
+          </div>
+        </div>
+
+        <!-- EMA (買い) -->
+        <div class="indicator-child-item" id="buyEmaGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="buyUseEma" checked onchange="updateUI()"><strong>EMA条件を使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>EMA期間</label><input type="number" id="buyEmaPeriod" value="20"></div>
             <div class="form-group">
-              <label>閾値 (レベル)</label>
-              <input type="number" id="buyRsiLevel" value="30">
+              <label>価格位置関係</label>
+              <select id="buyEmaMode">
+                <option value=">">終値がEMAより上</option>
+                <option value="<">終値がEMAより下</option>
+              </select>
             </div>
+          </div>
+        </div>
+
+        <!-- 一目均衡表 (買い) -->
+        <div class="indicator-child-item" id="buyIchimokuGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="buyUseIchimoku" checked onchange="updateUI()"><strong>一目均衡表を使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>転換線 / 基準線 / 先行スパンB</label><input type="text" id="buyIchiParams" value="9, 26, 52" placeholder="9, 26, 52"></div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="buyIchiMode">
+                <option value="cross">転換線が基準線より上</option>
+                <option value="cloud">価格が雲より上</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ボリンジャーバンド (買い) -->
+        <div class="indicator-child-item" id="buyBandsGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="buyUseBands" checked onchange="updateUI()"><strong>ボリンジャーバンドを使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>期間 / 偏差</label><input type="text" id="buyBandsParams" value="20, 2.0" placeholder="20, 2.0"></div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="buyBandsMode">
+                <option value="< lower">終値がLowerバンド以下 (逆張り)</option>
+                <option value="> upper">終値がUpperバンド以上 (順張り)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- DMI (買い) -->
+        <div class="indicator-child-item" id="buyDmiGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="buyUseDmi" checked onchange="updateUI()"><strong>DMIを使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>DMI期間</label><input type="number" id="buyDmiPeriod" value="14"></div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="buyDmiMode">
+                <option value=">">+DI が -DI より上</option>
+                <option value="<">+DI が -DI より下</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- KDJ (買い) -->
+        <div class="indicator-child-item" id="buyKdjGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="buyUseKdj" checked onchange="updateUI()"><strong>KDJを使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>%K / %D / Slowing</label><input type="text" id="buyKdjParams" value="9, 3, 3" placeholder="9, 3, 3"></div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="buyKdjMode">
+                <option value=">">%K が %D より上</option>
+                <option value="<">%K が %D より下</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- RSI (買い) -->
+        <div class="indicator-child-item" id="buyRsiGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="buyUseRsi" checked onchange="updateUI()"><strong>RSI条件を使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>RSI期間</label><input type="number" id="buyRsiPeriod" value="14"></div>
+            <div class="form-group"><label>閾値 (レベル)</label><input type="number" id="buyRsiLevel" value="30"></div>
             <div class="form-group">
               <label>判定</label>
               <select id="buyRsiMode">
@@ -348,28 +463,23 @@
           </div>
         </div>
 
-        <!-- 子項目: SMA (買い) -->
-        <div class="indicator-child-item" id="buySmaGroup" style="display: none;">
+        <!-- MACD (買い) -->
+        <div class="indicator-child-item" id="buyMacdGroup" style="display: none;">
           <div class="child-header">
-            <label class="checkbox-label">
-              <input type="checkbox" id="buyUseSma" checked onchange="updateUI()">
-              <strong>SMA条件を使用する</strong>
-            </label>
+            <label class="checkbox-label"><input type="checkbox" id="buyUseMacd" checked onchange="updateUI()"><strong>MACDを使用する</strong></label>
           </div>
           <div class="grid-2">
+            <div class="form-group"><label>Fast / Slow / Signal</label><input type="text" id="buyMacdParams" value="12, 26, 9" placeholder="12, 26, 9"></div>
             <div class="form-group">
-              <label>SMA期間</label>
-              <input type="number" id="buySmaPeriod" value="200">
-            </div>
-            <div class="form-group">
-              <label>価格位置関係</label>
-              <select id="buySmaMode">
-                <option value=">">終値がSMAより上</option>
-                <option value="<">終値がSMAより下</option>
+              <label>判定</label>
+              <select id="buyMacdMode">
+                <option value=">">メイン線 が シグナル線 より上</option>
+                <option value="<">メイン線 が シグナル線 より下</option>
               </select>
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -382,25 +492,117 @@
         </label>
       </div>
 
-      <!-- 制御・非活性化対象を包むコンテナ -->
       <div class="condition-content">
-        <!-- 子項目: RSI (売り) -->
-        <div class="indicator-child-item" id="sellRsiGroup" style="display: none;">
+        <!-- SMA (売り) -->
+        <div class="indicator-child-item" id="sellSmaGroup" style="display: none;">
           <div class="child-header">
-            <label class="checkbox-label">
-              <input type="checkbox" id="sellUseRsi" checked onchange="updateUI()">
-              <strong>RSI条件を使用する</strong>
-            </label>
+            <label class="checkbox-label"><input type="checkbox" id="sellUseSma" checked onchange="updateUI()"><strong>SMA条件を使用する</strong></label>
           </div>
           <div class="grid-2">
+            <div class="form-group"><label>SMA期間</label><input type="number" id="sellSmaPeriod" value="200"></div>
             <div class="form-group">
-              <label>RSI期間</label>
-              <input type="number" id="sellRsiPeriod" value="14">
+              <label>価格位置関係</label>
+              <select id="sellSmaMode">
+                <option value="<">終値がSMAより下</option>
+                <option value=">">終値がSMAより上</option>
+              </select>
             </div>
+          </div>
+        </div>
+
+        <!-- EMA (売り) -->
+        <div class="indicator-child-item" id="sellEmaGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="sellUseEma" checked onchange="updateUI()"><strong>EMA条件を使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>EMA期間</label><input type="number" id="sellEmaPeriod" value="20"></div>
             <div class="form-group">
-              <label>閾値 (レベル)</label>
-              <input type="number" id="sellRsiLevel" value="70">
+              <label>価格位置関係</label>
+              <select id="sellEmaMode">
+                <option value="<">終値がEMAより下</option>
+                <option value=">">終値がEMAより上</option>
+              </select>
             </div>
+          </div>
+        </div>
+
+        <!-- 一目均衡表 (売り) -->
+        <div class="indicator-child-item" id="sellIchimokuGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="sellUseIchimoku" checked onchange="updateUI()"><strong>一目均衡表を使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>転換線 / 基準線 / 先行スパンB</label><input type="text" id="sellIchiParams" value="9, 26, 52" placeholder="9, 26, 52"></div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="sellIchiMode">
+                <option value="cross">転換線が基準線より下</option>
+                <option value="cloud">価格が雲より下</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- ボリンジャーバンド (売り) -->
+        <div class="indicator-child-item" id="sellBandsGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="sellUseBands" checked onchange="updateUI()"><strong>ボリンジャーバンドを使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>期間 / 偏差</label><input type="text" id="sellBandsParams" value="20, 2.0" placeholder="20, 2.0"></div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="sellBandsMode">
+                <option value="> upper">終値がUpperバンド以上 (逆張り)</option>
+                <option value="< lower">終値がLowerバンド以下 (順張り)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- DMI (売り) -->
+        <div class="indicator-child-item" id="sellDmiGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="sellUseDmi" checked onchange="updateUI()"><strong>DMIを使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>DMI期間</label><input type="number" id="sellDmiPeriod" value="14"></div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="sellDmiMode">
+                <option value="<">+DI が -DI より下</option>
+                <option value=">">+DI が -DI より上</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- KDJ (売り) -->
+        <div class="indicator-child-item" id="sellKdjGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="sellUseKdj" checked onchange="updateUI()"><strong>KDJを使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>%K / %D / Slowing</label><input type="text" id="sellKdjParams" value="9, 3, 3" placeholder="9, 3, 3"></div>
+            <div class="form-group">
+              <label>判定</label>
+              <select id="sellKdjMode">
+                <option value="<">%K が %D より下</option>
+                <option value=">">%K が %D より上</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- RSI (売り) -->
+        <div class="indicator-child-item" id="sellRsiGroup" style="display: none;">
+          <div class="child-header">
+            <label class="checkbox-label"><input type="checkbox" id="sellUseRsi" checked onchange="updateUI()"><strong>RSI条件を使用する</strong></label>
+          </div>
+          <div class="grid-2">
+            <div class="form-group"><label>RSI期間</label><input type="number" id="sellRsiPeriod" value="14"></div>
+            <div class="form-group"><label>閾値 (レベル)</label><input type="number" id="sellRsiLevel" value="70"></div>
             <div class="form-group">
               <label>判定</label>
               <select id="sellRsiMode">
@@ -411,28 +613,23 @@
           </div>
         </div>
 
-        <!-- 子項目: SMA (売り) -->
-        <div class="indicator-child-item" id="sellSmaGroup" style="display: none;">
+        <!-- MACD (売り) -->
+        <div class="indicator-child-item" id="sellMacdGroup" style="display: none;">
           <div class="child-header">
-            <label class="checkbox-label">
-              <input type="checkbox" id="sellUseSma" checked onchange="updateUI()">
-              <strong>SMA条件を使用する</strong>
-            </label>
+            <label class="checkbox-label"><input type="checkbox" id="sellUseMacd" checked onchange="updateUI()"><strong>MACDを使用する</strong></label>
           </div>
           <div class="grid-2">
+            <div class="form-group"><label>Fast / Slow / Signal</label><input type="text" id="sellMacdParams" value="12, 26, 9" placeholder="12, 26, 9"></div>
             <div class="form-group">
-              <label>SMA期間</label>
-              <input type="number" id="sellSmaPeriod" value="200">
-            </div>
-            <div class="form-group">
-              <label>価格位置関係</label>
-              <select id="sellSmaMode">
-                <option value="<">終値がSMAより下</option>
-                <option value=">">終値がSMAより上</option>
+              <label>判定</label>
+              <select id="sellMacdMode">
+                <option value="<">メイン線 が シグナル線 より下</option>
+                <option value=">">メイン線 が シグナル線 より上</option>
               </select>
             </div>
           </div>
         </div>
+
       </div>
     </div>
 
@@ -453,18 +650,20 @@
 </div>
 
 <script>
+// ヘルパー：カンマ区切りパラメータを取得
+function getParams(id) {
+  return document.getElementById(id).value.split(',').map(s => s.trim());
+}
+
 // Masterインジケーター切り替え処理
 function toggleIndicatorMaster(type) {
-  if (type === 'RSI') {
-    const isChecked = document.getElementById('useRSI').checked;
-    document.getElementById('buyRsiGroup').style.display = isChecked ? 'block' : 'none';
-    document.getElementById('sellRsiGroup').style.display = isChecked ? 'block' : 'none';
-  } 
-  else if (type === 'SMA') {
-    const isChecked = document.getElementById('useSMA').checked;
-    document.getElementById('buySmaGroup').style.display = isChecked ? 'block' : 'none';
-    document.getElementById('sellSmaGroup').style.display = isChecked ? 'block' : 'none';
-  }
+  const isChecked = document.getElementById('use' + type).checked;
+  const buyGroup = document.getElementById('buy' + (type === 'Ichimoku' ? 'Ichimoku' : type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()) + 'Group');
+  const sellGroup = document.getElementById('sell' + (type === 'Ichimoku' ? 'Ichimoku' : type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()) + 'Group');
+  
+  if(buyGroup) buyGroup.style.display = isChecked ? 'block' : 'none';
+  if(sellGroup) sellGroup.style.display = isChecked ? 'block' : 'none';
+  
   updateUI();
 }
 
@@ -476,19 +675,23 @@ function updateUI() {
   document.getElementById('buyBox').classList.toggle('disabled', !buyEnable);
   document.getElementById('sellBox').classList.toggle('disabled', !sellEnable);
 
-  const useRSI = document.getElementById('useRSI').checked;
-  const useSMA = document.getElementById('useSMA').checked;
+  const indicators = ['SMA', 'EMA', 'Ichimoku', 'Bands', 'DMI', 'KDJ', 'RSI', 'MACD'];
+  
+  let buyHasCondition = false;
+  let sellHasCondition = false;
 
-  const buyHasCondition = buyEnable && ((useRSI && document.getElementById('buyUseRsi').checked) || (useSMA && document.getElementById('buyUseSma').checked));
-  const sellHasCondition = sellEnable && ((useRSI && document.getElementById('sellUseRsi').checked) || (useSMA && document.getElementById('sellUseSma').checked));
+  indicators.forEach(ind => {
+    const useMaster = document.getElementById('use' + ind).checked;
+    const suffix = ind === 'Ichimoku' ? 'Ichimoku' : ind.charAt(0).toUpperCase() + ind.slice(1).toLowerCase();
+    if (useMaster && document.getElementById('buyUse' + suffix).checked) buyHasCondition = true;
+    if (useMaster && document.getElementById('sellUse' + suffix).checked) sellHasCondition = true;
+  });
 
   const warningBox = document.getElementById('warningBox');
   const generateBtn = document.getElementById('generateBtn');
 
   let isValid = true;
-  if (!buyEnable && !sellEnable) {
-    isValid = false;
-  }
+  if (!buyEnable && !sellEnable) isValid = false;
   if (buyEnable && !buyHasCondition) isValid = false;
   if (sellEnable && !sellHasCondition) isValid = false;
 
@@ -513,41 +716,115 @@ function generateEA() {
 
   const buyEnable = document.getElementById('buyEnable').checked;
   const sellEnable = document.getElementById('sellEnable').checked;
-  const useRSI = document.getElementById('useRSI').checked;
-  const useSMA = document.getElementById('useSMA').checked;
 
   let buyConds = [];
   if (buyEnable) {
-    if (useRSI && document.getElementById('buyUseRsi').checked) {
+    if (document.getElementById('useSMA').checked && document.getElementById('buyUseSma').checked) {
+      const p = document.getElementById('buySmaPeriod').value;
+      const m = document.getElementById('buySmaMode').value;
+      buyConds.push(`iClose(Symbol(), ${tf}, ${shift}) ${m} iMA(Symbol(), ${tf}, ${p}, 0, MODE_SMA, PRICE_CLOSE, ${shift})`);
+    }
+    if (document.getElementById('useEMA').checked && document.getElementById('buyUseEma').checked) {
+      const p = document.getElementById('buyEmaPeriod').value;
+      const m = document.getElementById('buyEmaMode').value;
+      buyConds.push(`iClose(Symbol(), ${tf}, ${shift}) ${m} iMA(Symbol(), ${tf}, ${p}, 0, MODE_EMA, PRICE_CLOSE, ${shift})`);
+    }
+    if (document.getElementById('useIchimoku').checked && document.getElementById('buyUseIchimoku').checked) {
+      const params = getParams('buyIchiParams');
+      const m = document.getElementById('buyIchiMode').value;
+      if (m === 'cross') {
+        buyConds.push(`iIchimoku(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_TENKANSEN, ${shift}) > iIchimoku(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_KIJUNSEN, ${shift})`);
+      } else {
+        buyConds.push(`iClose(Symbol(), ${tf}, ${shift}) > MathMax(iIchimoku(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_SENKOUSPAN_A, ${shift}), iIchimoku(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_SENKOUSPAN_B, ${shift}))`);
+      }
+    }
+    if (document.getElementById('useBands').checked && document.getElementById('buyUseBands').checked) {
+      const params = getParams('buyBandsParams');
+      const m = document.getElementById('buyBandsMode').value;
+      if (m === '< lower') {
+        buyConds.push(`iClose(Symbol(), ${tf}, ${shift}) < iBands(Symbol(), ${tf}, ${params[0]}, ${params[1]}, 0, PRICE_CLOSE, MODE_LOWER, ${shift})`);
+      } else {
+        buyConds.push(`iClose(Symbol(), ${tf}, ${shift}) > iBands(Symbol(), ${tf}, ${params[0]}, ${params[1]}, 0, PRICE_CLOSE, MODE_UPPER, ${shift})`);
+      }
+    }
+    if (document.getElementById('useDMI').checked && document.getElementById('buyUseDmi').checked) {
+      const p = document.getElementById('buyDmiPeriod').value;
+      const m = document.getElementById('buyDmiMode').value;
+      buyConds.push(`iADX(Symbol(), ${tf}, ${p}, PRICE_CLOSE, MODE_PLUSDI, ${shift}) ${m} iADX(Symbol(), ${tf}, ${p}, PRICE_CLOSE, MODE_MINUSDI, ${shift})`);
+    }
+    if (document.getElementById('useKDJ').checked && document.getElementById('buyUseKdj').checked) {
+      const params = getParams('buyKdjParams');
+      const m = document.getElementById('buyKdjMode').value;
+      buyConds.push(`iStochastic(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_SMA, 0, MODE_MAIN, ${shift}) ${m} iStochastic(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_SMA, 0, MODE_SIGNAL, ${shift})`);
+    }
+    if (document.getElementById('useRSI').checked && document.getElementById('buyUseRsi').checked) {
       const p = document.getElementById('buyRsiPeriod').value;
       const l = document.getElementById('buyRsiLevel').value;
       const m = document.getElementById('buyRsiMode').value;
       buyConds.push(`iRSI(Symbol(), ${tf}, ${p}, PRICE_CLOSE, ${shift}) ${m} ${l}.0`);
     }
-    if (useSMA && document.getElementById('buyUseSma').checked) {
-      const p = document.getElementById('buySmaPeriod').value;
-      const m = document.getElementById('buySmaMode').value;
-      buyConds.push(`iClose(Symbol(), ${tf}, ${shift}) ${m} iMA(Symbol(), ${tf}, ${p}, 0, MODE_SMA, PRICE_CLOSE, ${shift})`);
+    if (document.getElementById('useMACD').checked && document.getElementById('buyUseMacd').checked) {
+      const params = getParams('buyMacdParams');
+      const m = document.getElementById('buyMacdMode').value;
+      buyConds.push(`iMACD(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, PRICE_CLOSE, MODE_MAIN, ${shift}) ${m} iMACD(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, PRICE_CLOSE, MODE_SIGNAL, ${shift})`);
     }
   }
 
   let sellConds = [];
   if (sellEnable) {
-    if (useRSI && document.getElementById('sellUseRsi').checked) {
+    if (document.getElementById('useSMA').checked && document.getElementById('sellUseSma').checked) {
+      const p = document.getElementById('sellSmaPeriod').value;
+      const m = document.getElementById('sellSmaMode').value;
+      sellConds.push(`iClose(Symbol(), ${tf}, ${shift}) ${m} iMA(Symbol(), ${tf}, ${p}, 0, MODE_SMA, PRICE_CLOSE, ${shift})`);
+    }
+    if (document.getElementById('useEMA').checked && document.getElementById('sellUseEma').checked) {
+      const p = document.getElementById('sellEmaPeriod').value;
+      const m = document.getElementById('sellEmaMode').value;
+      sellConds.push(`iClose(Symbol(), ${tf}, ${shift}) ${m} iMA(Symbol(), ${tf}, ${p}, 0, MODE_EMA, PRICE_CLOSE, ${shift})`);
+    }
+    if (document.getElementById('useIchimoku').checked && document.getElementById('sellUseIchimoku').checked) {
+      const params = getParams('sellIchiParams');
+      const m = document.getElementById('sellIchiMode').value;
+      if (m === 'cross') {
+        sellConds.push(`iIchimoku(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_TENKANSEN, ${shift}) < iIchimoku(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_KIJUNSEN, ${shift})`);
+      } else {
+        sellConds.push(`iClose(Symbol(), ${tf}, ${shift}) < MathMin(iIchimoku(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_SENKOUSPAN_A, ${shift}), iIchimoku(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_SENKOUSPAN_B, ${shift}))`);
+      }
+    }
+    if (document.getElementById('useBands').checked && document.getElementById('sellUseBands').checked) {
+      const params = getParams('sellBandsParams');
+      const m = document.getElementById('sellBandsMode').value;
+      if (m === '< lower') {
+        sellConds.push(`iClose(Symbol(), ${tf}, ${shift}) < iBands(Symbol(), ${tf}, ${params[0]}, ${params[1]}, 0, PRICE_CLOSE, MODE_LOWER, ${shift})`);
+      } else {
+        sellConds.push(`iClose(Symbol(), ${tf}, ${shift}) > iBands(Symbol(), ${tf}, ${params[0]}, ${params[1]}, 0, PRICE_CLOSE, MODE_UPPER, ${shift})`);
+      }
+    }
+    if (document.getElementById('useDMI').checked && document.getElementById('sellUseDmi').checked) {
+      const p = document.getElementById('sellDmiPeriod').value;
+      const m = document.getElementById('sellDmiMode').value;
+      sellConds.push(`iADX(Symbol(), ${tf}, ${p}, PRICE_CLOSE, MODE_PLUSDI, ${shift}) ${m} iADX(Symbol(), ${tf}, ${p}, PRICE_CLOSE, MODE_MINUSDI, ${shift})`);
+    }
+    if (document.getElementById('useKDJ').checked && document.getElementById('sellUseKdj').checked) {
+      const params = getParams('sellKdjParams');
+      const m = document.getElementById('sellKdjMode').value;
+      sellConds.push(`iStochastic(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_SMA, 0, MODE_MAIN, ${shift}) ${m} iStochastic(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, MODE_SMA, 0, MODE_SIGNAL, ${shift})`);
+    }
+    if (document.getElementById('useRSI').checked && document.getElementById('sellUseRsi').checked) {
       const p = document.getElementById('sellRsiPeriod').value;
       const l = document.getElementById('sellRsiLevel').value;
       const m = document.getElementById('sellRsiMode').value;
       sellConds.push(`iRSI(Symbol(), ${tf}, ${p}, PRICE_CLOSE, ${shift}) ${m} ${l}.0`);
     }
-    if (useSMA && document.getElementById('sellUseSma').checked) {
-      const p = document.getElementById('sellSmaPeriod').value;
-      const m = document.getElementById('sellSmaMode').value;
-      sellConds.push(`iClose(Symbol(), ${tf}, ${shift}) ${m} iMA(Symbol(), ${tf}, ${p}, 0, MODE_SMA, PRICE_CLOSE, ${shift})`);
+    if (document.getElementById('useMACD').checked && document.getElementById('sellUseMacd').checked) {
+      const params = getParams('sellMacdParams');
+      const m = document.getElementById('sellMacdMode').value;
+      sellConds.push(`iMACD(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, PRICE_CLOSE, MODE_MAIN, ${shift}) ${m} iMACD(Symbol(), ${tf}, ${params[0]}, ${params[1]}, ${params[2]}, PRICE_CLOSE, MODE_SIGNAL, ${shift})`);
     }
   }
 
-  const buyLogicStr = (buyConds.length > 0) ? buyConds.join(" && ") : "false";
-  const sellLogicStr = (sellConds.length > 0) ? sellConds.join(" && ") : "false";
+  const buyLogicStr = (buyConds.length > 0) ? buyConds.join(" && \n       ") : "false";
+  const sellLogicStr = (sellConds.length > 0) ? sellConds.join(" && \n       ") : "false";
 
   const code = `//+------------------------------------------------------------------+
 //|                                  AkatoTradeGuild_EA.mq4          |
@@ -634,8 +911,9 @@ function copyCode() {
 
 // ページ初期化
 window.addEventListener('DOMContentLoaded', () => {
-  toggleIndicatorMaster('RSI');
-  toggleIndicatorMaster('SMA');
+  ['SMA', 'EMA', 'Ichimoku', 'Bands', 'DMI', 'KDJ', 'RSI', 'MACD'].forEach(ind => {
+    toggleIndicatorMaster(ind);
+  });
   generateEA();
 });
 </script>
